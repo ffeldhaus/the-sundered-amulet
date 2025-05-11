@@ -1,0 +1,11 @@
+{
+    "name": "the-sundered-amulet",
+    "version": "1.0.0",
+    "description": "The Sundered Amulet - Classical RPG",
+    "main": "index.html",
+    "scripts": {
+        "dev": "http-server"
+      },
+    "author": "Florian Feldhaus",
+    "license": "ISC"
+  }

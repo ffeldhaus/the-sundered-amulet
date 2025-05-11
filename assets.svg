@@ -1,0 +1,221 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="display: none;">
+  <defs>
+    <!-- Environment Textures -->
+    <symbol id="wall-stone" viewBox="0 0 100 100">
+      <defs>
+        <linearGradient id="wallGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#736659;stop-opacity:1" />
+          <stop offset="100%" style="stop-color:#52493f;stop-opacity:1" />
+        </linearGradient>
+        <filter id="wallTexture" x="0" y="0" width="100%" height="100%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="3" seed="15" result="turbulence"/>
+          <feDiffuseLighting in="turbulence" lighting-color="#ccc" surfaceScale="2" result="diffuse">
+            <feDistantLight azimuth="45" elevation="60"/>
+          </feDiffuseLighting>
+          <feComposite operator="in" in2="SourceGraphic" result="textured"/>
+          <feBlend in="SourceGraphic" in2="textured" mode="multiply" />
+        </filter>
+      </defs>
+      <rect width="100" height="100" fill="url(#wallGrad)"/>
+      <!-- Mortar lines -->
+      <path d="M0,33 H100 M0,66 H100 M50,0 V33 M25,33 V66 M75,33 V66 M50,66 V100 M33,0 H0 V100 H100 V0 H66 V33 H33 V66 H66 V100 H33" stroke="#4a3f30" stroke-width="1.5"/>
+      <rect width="100" height="100" fill="rgba(0,0,0,0.1)" filter="url(#wallTexture)"/>
+    </symbol>
+
+    <symbol id="floor-stone" viewBox="0 0 100 100">
+      <defs>
+        <linearGradient id="floorGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" style="stop-color:#8c7b6a;stop-opacity:1" />
+          <stop offset="100%" style="stop-color:#6f6254;stop-opacity:1" />
+        </linearGradient>
+         <filter id="floorTextureFilter" x="0" y="0" width="100%" height="100%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="2" seed="25" result="turbulenceFloor"/>
+          <feDiffuseLighting in="turbulenceFloor" lighting-color="#bbb" surfaceScale="1.5" result="diffuseFloor">
+            <feDistantLight azimuth="45" elevation="70"/>
+          </feDiffuseLighting>
+           <feComposite operator="in" in2="SourceGraphic" result="texturedFloor"/>
+           <feBlend in="SourceGraphic" in2="texturedFloor" mode="multiply" opacity="0.7"/>
+        </filter>
+      </defs>
+      <rect width="100" height="100" fill="url(#floorGrad)"/>
+      <!-- Flagstone pattern -->
+      <path d="M0,25 H50 L50,0 M0,50 H25 L25,25 H75 L75,0 M0,75 H60 L60,50 H25 M50,25 H100 M50,50 H100 L100,25 M75,50 H60 M25,75 H100 L100,50 M0,100 H100 M50,75 V100 M25,50 V75 M75,25 V50" fill="none" stroke="#5a4d3f" stroke-width="1.2"/>
+      <rect width="100" height="100" fill="transparent" filter="url(#floorTextureFilter)"/>
+    </symbol>
+
+    <symbol id="door-wood-closed" viewBox="0 0 100 100">
+      <rect width="100" height="100" fill="#654321"/> <!-- Dark Frame/Wall Recess -->
+      <rect x="10" y="5" width="80" height="90" fill="#8B5A2B" rx="3" ry="3" stroke="#5D3A1B" stroke-width="3"/>
+      <!-- Planks -->
+      <line x1="30" y1="5" x2="30" y2="95" stroke="#5D3A1B" stroke-width="2.5"/>
+      <line x1="50" y1="5" x2="50" y2="95" stroke="#5D3A1B" stroke-width="2.5"/>
+      <line x1="70" y1="5" x2="70" y2="95" stroke="#5D3A1B" stroke-width="2.5"/>
+      <!-- Metal Bands -->
+      <rect x="5" y="15" width="90" height="10" fill="#707070" stroke="#404040" stroke-width="1"/>
+      <rect x="5" y="75" width="90" height="10" fill="#707070" stroke="#404040" stroke-width="1"/>
+      <!-- Rivets -->
+      <circle cx="15" cy="20" r="2" fill="#404040"/><circle cx="40" cy="20" r="2" fill="#404040"/><circle cx="60" cy="20" r="2" fill="#404040"/><circle cx="85" cy="20" r="2" fill="#404040"/>
+      <circle cx="15" cy="80" r="2" fill="#404040"/><circle cx="40" cy="80" r="2" fill="#404040"/><circle cx="60" cy="80" r="2" fill="#404040"/><circle cx="85" cy="80" r="2" fill="#404040"/>
+      <!-- Handle -->
+      <rect x="18" y="45" width="10" height="10" fill="#404040" rx="2"/>
+    </symbol>
+
+    <symbol id="door-wood-open" viewBox="0 0 100 100">
+      <rect width="100" height="100" fill="#302820"/> <!-- Dark passage -->
+      <rect x="5" y="5" width="15" height="90" fill="#654321" /> <!-- Door frame side -->
+      <rect x="80" y="5" width="15" height="90" fill="#654321" /> <!-- Door frame side -->
+      <rect x="5" y="0" width="90" height="10" fill="#654321" /> <!-- Door frame top -->
+       <!-- Hint of opened door edge -->
+      <polygon points="15,5 25,10 25,90 15,95" fill="#8B5A2B" stroke="#5D3A1B" stroke-width="2"/>
+    </symbol>
+
+    <symbol id="chest-closed" viewBox="0 0 100 100">
+      <rect x="10" y="40" width="80" height="50" fill="#8A360F" stroke="#502010" stroke-width="3" rx="5"/>
+      <rect x="5" y="20" width="90" height="35" fill="#A0400F" stroke="#502010" stroke-width="3" rx="8" ry="8"/>
+      <!-- Metal bands -->
+      <rect x="15" y="18" width="15" height="74" fill="#708090" stroke="#405060" stroke-width="1.5" rx="2"/>
+      <rect x="70" y="18" width="15" height="74" fill="#708090" stroke="#405060" stroke-width="1.5" rx="2"/>
+      <rect x="42" y="45" width="16" height="12" fill="#FFD700" stroke="#B8860B" stroke-width="1.5" rx="3"/> <!-- Lock -->
+    </symbol>
+
+    <symbol id="chest-open" viewBox="0 0 100 100">
+      <rect x="10" y="40" width="80" height="50" fill="#8A360F" stroke="#502010" stroke-width="3" rx="5"/>
+      <!-- Gold pile -->
+      <circle cx="50" cy="60" r="25" fill="#FFD700" opacity="0.8"/>
+      <circle cx="40" cy="65" r="15" fill="#F0E68C" opacity="0.9"/>
+      <circle cx="60" cy="68" r="18" fill="#DAA520" opacity="0.7"/>
+      <!-- Lid Open -->
+      <path d="M5,35 Q50,-10 95,35 L90,50 Q50,10 10,50 Z" fill="#A0400F" stroke="#502010" stroke-width="3" transform="rotate(-45 50 20) translate(0 -10)"/>
+      <rect x="15" y="18" width="15" height="30" fill="#708090" stroke="#405060" stroke-width="1.5" rx="2" transform="rotate(-45 22.5 33) translate(-10 -15)"/>
+      <rect x="70" y="18" width="15" height="30" fill="#708090" stroke="#405060" stroke-width="1.5" rx="2" transform="rotate(-45 77.5 33) translate(-10 -15)"/>
+    </symbol>
+
+    <symbol id="stairs-down" viewBox="0 0 100 100">
+      <rect width="100" height="100" fill="#202020"/>
+      <polygon points="10,10 90,10 70,30 30,30 Z" fill="#444"/>
+      <polygon points="30,30 70,30 60,45 40,45 Z" fill="#383838"/>
+      <polygon points="40,45 60,45 55,55 45,55 Z" fill="#303030"/>
+      <rect x="45" y="55" width="10" height="5" fill="#252525"/>
+    </symbol>
+
+    <!-- Item Icons -->
+    <symbol id="icon-sword" viewBox="0 0 24 24">
+        <path fill="#C0C0C0" stroke="#505050" stroke-width="1" d="M21.71,3.29L19,6L17,4L19.71,1.29A1,1 0 0,1 21.12,1.29L21.71,1.88A1,1 0 0,1 21.71,3.29M5.5,7.5L10,12L12,10L7.5,5.5L5.5,7.5M10.28,12.45L8.86,11.04L2,17.9V22H6.1L12.96,15.14L11.55,13.72L10.28,12.45M14,8L12,10L14,12L18,8L14,8Z" />
+    </symbol>
+    <symbol id="icon-shield" viewBox="0 0 24 24">
+        <path fill="#B0B0B0" stroke="#404040" stroke-width="1" d="M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1M12,3.09L19,6.08V11C19,15.54 15.94,19.84 12,20.92C8.06,19.84 5,15.54 5,11V6.08L12,3.09Z" />
+    </symbol>
+    <symbol id="icon-potion" viewBox="0 0 24 24">
+        <path fill="#FF6347" stroke="#8B0000" stroke-width="0.8" d="M15,3H9C9,1.34 10.34,0 12,0C13.66,0 15,1.34 15,3M18,5H6A2,2 0 0,0 4,7V19A3,3 0 0,0 7,22H17A3,3 0 0,0 20,19V7A2,2 0 0,0 18,5M14,14A2,2 0 0,1 12,16A2,2 0 0,1 10,14A2,2 0 0,1 12,12A2,2 0 0,1 14,14Z" />
+    </symbol>
+     <symbol id="icon-potion-mana" viewBox="0 0 24 24">
+        <use xlink:href="#icon-potion" fill="#4682B4" stroke="#00008B"/>
+    </symbol>
+    <symbol id="icon-potion-generic" viewBox="0 0 24 24">
+        <use xlink:href="#icon-potion" fill="#9370DB" stroke="#4B0082"/>
+    </symbol>
+    <symbol id="icon-gold" viewBox="0 0 24 24">
+      <circle cx="10" cy="16" r="7" fill="#FFD700" stroke="#B8860B" stroke-width="1"/>
+      <circle cx="15" cy="14" r="5" fill="#F0E68C" stroke="#DAA520" stroke-width="0.8"/>
+      <circle cx="12" cy="9" r="4" fill="#E6BE8A" stroke="#CD853F" stroke-width="0.5"/>
+    </symbol>
+
+    <!-- Enemy Sprites -->
+    <symbol id="enemy-goblin" viewBox="0 0 100 100">
+      <path d="M50,95 C70,95 85,80 90,60 C95,40 80,20 70,10 C60,0 40,0 30,10 C20,20 5,40 10,60 C15,80 30,95 50,95 Z" fill="#6B8E23"/> <!-- Head shape -->
+      <path d="M30,15 Q20,30 25,45 L15,50 Q20,35 30,15 Z" fill="#A0522D"/> <!-- Left Ear -->
+      <path d="M70,15 Q80,30 75,45 L85,50 Q80,35 70,15 Z" fill="#A0522D"/> <!-- Right Ear -->
+      <ellipse cx="38" cy="45" rx="10" ry="8" fill="#FFEB3B"/> <!-- Left Eye -->
+      <ellipse cx="62" cy="45" rx="10" ry="8" fill="#FFEB3B"/> <!-- Right Eye -->
+      <circle cx="38" cy="45" r="4" fill="#A52A2A"/> <!-- Left Pupil -->
+      <circle cx="62" cy="45" r="4" fill="#A52A2A"/> <!-- Right Pupil -->
+      <path d="M40,70 Q50,80 60,70 Q50,75 40,70" fill="#8B4513"/> <!-- Mouth -->
+      <path d="M45,72 L40,80 L45,82 Z" fill="#F5F5F5"/> <!-- Tooth -->
+      <path d="M55,72 L60,80 L55,82 Z" fill="#F5F5F5"/> <!-- Tooth -->
+      <rect x="45" y="25" width="10" height="5" fill="#4B3A26"/> <!-- Nose bridge -->
+    </symbol>
+
+    <symbol id="enemy-skeleton" viewBox="0 0 100 100">
+      <rect x="40" y="50" width="20" height="35" fill="#F5F5DC" rx="3"/> <!-- Spine/torso stub -->
+      <path d="M25,55 h50 v10 h-50 z M20,65 h60 v10 h-60 z" fill="#F5F5DC"/> <!-- Ribs -->
+      <circle cx="50" cy="30" r="20" fill="#F5F5DC"/> <!-- Skull -->
+      <circle cx="40" cy="30" r="6" fill="#1E1E1E"/> <!-- Left eye socket -->
+      <circle cx="60" cy="30" r="6" fill="#1E1E1E"/> <!-- Right eye socket -->
+      <polygon points="48,38 52,38 50,45" fill="#1E1E1E"/> <!-- Nose hole -->
+      <rect x="35" y="42" width="30" height="5" fill="#1E1E1E" rx="1"/> <!-- Mouth line -->
+       <!-- Teeth lines -->
+      <path d="M37,42 V47 M42,42 V47 M47,42 V47 M53,42 V47 M58,42 V47 M63,42 V47" stroke="#D3D3D3" stroke-width="1"/>
+    </symbol>
+
+    <!-- Party Marker for Map -->
+    <symbol id="party-marker" viewBox="0 0 100 100">
+      <polygon points="50,10 70,40 60,40 60,90 40,90 40,40 30,40 Z" fill="#FFD700" stroke="#B8860B" stroke-width="3"/>
+    </symbol>
+
+    <!-- Character Portraits -->
+    <symbol id="portrait-warrior" viewBox="0 0 100 100">
+      <rect x="15" y="25" width="70" height="70" fill="#A9A9A9" rx="5"/> <!-- Chest plate -->
+      <rect x="25" y="5" width="50" height="40" fill="#D3D3D3" rx="10"/> <!-- Helmet -->
+      <rect x="20" y="45" width="60" height="15" fill="#808080"/> <!-- Shoulder guards hint -->
+      <rect x="30" y="20" width="40" height="15" fill="#696969"/> <!-- Visor slit -->
+      <ellipse cx="50" cy="60" rx="25" ry="20" fill="#F5DEB3"/> <!-- Face area -->
+      <circle cx="42" cy="58" r="3" fill="#502010"/> <!-- Eye -->
+      <circle cx="58" cy="58" r="3" fill="#502010"/> <!-- Eye -->
+      <path d="M40,70 Q50,75 60,70" stroke="#502010" stroke-width="2" fill="none"/> <!-- Mouth -->
+    </symbol>
+
+    <symbol id="portrait-mage" viewBox="0 0 100 100">
+      <path d="M50,5 L15,35 Q10,95 50,95 Q90,95 85,35 Z" fill="#483D8B"/> <!-- Robe/Hood -->
+      <circle cx="50" cy="45" r="20" fill="#FFE4E1"/> <!-- Face -->
+      <path d="M25,30 Q50,20 75,30 L70,40 Q50,35 30,40 Z" fill="#302050"/> <!-- Hood shadow -->
+      <circle cx="43" cy="45" r="3" fill="#191970"/> <!-- Eye -->
+      <circle cx="57" cy="45" r="3" fill="#191970"/> <!-- Eye -->
+      <path d="M45,55 Q50,52 55,55" stroke="#191970" stroke-width="1.5" fill="none"/> <!-- Mouth -->
+      <path d="M50,70 L45,80 L55,80 Z" fill="#A0522D"/> <!-- Beard -->
+    </symbol>
+
+    <symbol id="portrait-ranger" viewBox="0 0 100 100">
+      <polygon points="50,10 20,30 25,85 75,85 80,30" fill="#228B22"/> <!-- Tunic/Cloak -->
+      <path d="M50,15 Q25,20 20,35 L80,35 Q75,20 50,15" fill="#006400"/> <!-- Hood/Cap -->
+      <ellipse cx="50" cy="50" rx="22" ry="18" fill="#F5DEB3"/> <!-- Face -->
+      <circle cx="40" cy="48" r="3" fill="#004400"/> <!-- Eye -->
+      <circle cx="60" cy="48" r="3" fill="#004400"/> <!-- Eye -->
+      <path d="M45,60 Q50,62 55,60" stroke="#004400" stroke-width="2" fill="none"/> <!-- Mouth -->
+      <path d="M65,5 L75,15 L85,5 L90,10 L80,25 L70,15 Z" fill="#98FB98" opacity="0.7"/> <!-- Feather -->
+    </symbol>
+
+    <symbol id="portrait-knight" viewBox="0 0 100 100">
+      <rect x="10" y="10" width="80" height="85" fill="#B0C4DE" rx="8"/> <!-- Full Armor -->
+      <rect x="5" y="5" width="90" height="30" fill="#778899" rx="15"/> <!-- Helmet Dome -->
+      <rect x="25" y="25" width="50" height="20" fill="#4682B4"/> <!-- Visor -->
+      <line x1="30" y1="35" x2="70" y2="35" stroke="#2F4F4F" stroke-width="3"/> <!-- Visor Slit -->
+      <rect x="10" y="40" width="80" height="15" fill="#708090"/> <!-- Gorget/Chest band -->
+      <circle cx="50" cy="70" r="10" fill="#FFD700" stroke="#B8860B" stroke-width="2"/> <!-- Emblem -->
+      <path d="M45,70 L55,70 M50,65 L50,75" stroke="#B8860B" stroke-width="2"/> <!-- Emblem Cross -->
+    </symbol>
+
+    <symbol id="portrait-rogue" viewBox="0 0 100 100">
+      <path d="M50,15 Q20,20 25,50 L20,90 L80,90 L75,50 Q80,20 50,15" fill="#36454F"/> <!-- Cloak -->
+      <path d="M30,25 C40,10 60,10 70,25 L75,45 L25,45 Z" fill="#2A3439"/> <!-- Hood -->
+      <ellipse cx="50" cy="55" rx="20" ry="15" fill="#A9A9A9" opacity="0.5"/> <!-- Shadowed Face -->
+      <ellipse cx="42" cy="52" rx="4" ry="6" fill="#FFFF00"/> <!-- Glowing Eye -->
+      <ellipse cx="58" cy="52" rx="4" ry="6" fill="#FFFF00"/> <!-- Glowing Eye -->
+      <path d="M40,80 L35,95 L65,95 L60,80" fill="#5D4037"/> <!-- Dagger hilts (implied) -->
+    </symbol>
+
+    <symbol id="portrait-cleric" viewBox="0 0 100 100">
+      <path d="M50,12 A35,30 0 0,0 15,42 L15,90 A5,5 0 0,0 20,95 L80,95 A5,5 0 0,0 85,90 L85,42 A35,30 0 0,0 50,12" fill="#F5F5DC"/> <!-- Robes -->
+      <path d="M30,10 Q50,0 70,10 L75,40 Q50,30 25,40 Z" fill="#D2B48C"/> <!-- Cowl/Hair -->
+      <ellipse cx="50" cy="50" rx="20" ry="22" fill="#FFEBCD"/> <!-- Face -->
+      <circle cx="40" cy="50" r="4" fill="#8B4513"/> <!-- Eye -->
+      <circle cx="60" cy="50" r="4" fill="#8B4513"/> <!-- Eye -->
+      <path d="M45,62 Q50,60 55,62" stroke="#8B4513" stroke-width="2" fill="none"/> <!-- Mouth -->
+      <rect x="45" y="75" width="10" height="15" fill="#FFD700"/> <!-- Holy Symbol Base -->
+      <rect x="40" y="80" width="20" height="5" fill="#FFD700"/> <!-- Holy Symbol Cross -->
+    </symbol>
+     <symbol id="portrait-placeholder" viewBox="0 0 100 100">
+      <rect width="100" height="100" fill="#555"/>
+      <text x="50" y="60" font-size="40" fill="#ccc" text-anchor="middle">?</text>
+    </symbol>
+  </defs>
+</svg>
