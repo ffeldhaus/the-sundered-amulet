@@ -3,169 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>The Sundered Amulet - V4</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=Lora:wght@400;500&display=swap" rel="stylesheet">
+    <title>The Sundered Amulet - Enhanced Edition</title>
+    <!-- External Libraries -->
+    <script src="https://cdn.tailwindcss.com"></script> <!-- Consider replacing with custom CSS if Tailwind is not heavily used or for smaller bundle -->
+    <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=Lora:wght@400;500;600&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
-    <style>
-        :root {
-            --font-classic-title: 'IM Fell English SC', serif;
-            --font-readable-body: 'Lora', serif;
-            --color-parchment: #e8d8c0;
-            --color-parchment-dark: #c8b8a0;
-            --color-text-dark: #3a2a1a;
-            --color-text-light: var(--color-parchment);
-            --color-stone-dark: #383838;
-            --color-stone-medium: #505050;
-            --color-stone-light: #707070;
-            --color-wood-dark: #4a382a;
-            --color-wood-medium: #604830;
-            --color-wood-light: #7a6a5a;
-            --color-gold-accent: #b8860b;
-            --color-border-dark: #2a1a0a;
-            --color-ui-bg: #2c1e12;
-            --color-ceiling: #221e18;
-            --color-floor-base: #403325;
-            --map-aspect-ratio-calc: 1; /* Default, will be updated by JS */
-        }
-        html, body { height: 100%; margin: 0; padding: 0; overflow: hidden; font-family: var(--font-readable-body); background-color: #110c08; color: var(--color-text-light); }
-        .modal-overlay { position:fixed;top:0;left:0;width:100%;height:100%;background-color:rgba(0,0,0,0.85);z-index:200;display:none;align-items:center;justify-content:center;padding:15px;}
-        .modal-content{background-color:var(--color-ui-bg);padding:20px;border:4px solid var(--color-wood-dark);border-image:url("data:image/svg+xml,%3Csvg width='30' height='30' viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cstyle%3Erect%7Bfill:%23604830; stroke:%23402818; stroke-width:2px; %7D%3C/style%3E%3Crect x='0' y='0' width='30' height='30'/%3E%3C/svg%3E") 5 stretch;width:100%;max-width:800px;max-height:90vh;overflow-y:auto;box-shadow:0 0 30px rgba(0,0,0,0.5);}
-        .modal-title-text{font-family:var(--font-classic-title);font-size:2em;color:var(--color-parchment);text-align:center;margin-bottom:20px;border-bottom:2px solid var(--color-wood-medium);padding-bottom:10px;}
-        .modal-button { font-family: var(--font-classic-title); background: linear-gradient(to bottom, var(--color-stone-light), var(--color-stone-medium)); color: var(--color-text-dark); padding: 10px 15px; border: 2px solid var(--color-stone-dark); border-top-color: var(--color-stone-light); border-left-color: var(--color-stone-light); border-bottom-color: #282828; border-right-color: #282828; border-radius: 3px; cursor: pointer; font-size: 1.1em; text-align: center; margin-top: 10px; display: block; width: 100%; max-width: 300px; margin-left:auto; margin-right:auto;}
-        .modal-button:hover { background: linear-gradient(to bottom, var(--color-stone-medium), var(--color-stone-dark)); color: var(--color-parchment); }
-        .modal-button:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        .archetype-selection-area,.current-party-area{margin-bottom:20px;}
-        .archetype-selection-area h3,.current-party-area h3{font-family:var(--font-classic-title);font-size:1.5em;color:var(--color-parchment-dark);margin-bottom:10px;}
-        .archetype-grid{display:grid;grid-template-columns:repeat(auto-fill, minmax(150px, 1fr));gap:15px;}
-        .archetype-card{background-color:var(--color-wood-light);border:2px solid var(--color-border-dark);padding:10px;color:var(--color-text-dark);cursor:pointer;transition:transform 0.2s ease, box-shadow 0.2s ease;}
-        .archetype-card:hover{transform:translateY(-3px);box-shadow:0 4px 10px rgba(0,0,0,0.4);}
-        .archetype-card h4{font-family:var(--font-classic-title);font-size:1.2em;margin-bottom:5px;}
-        .archetype-card p{font-size:0.8em;margin-bottom:3px;}
-        .archetype-card .portrait { width: 50px; height: 50px; margin-left:auto; margin-right:auto; margin-bottom:5px; }
-        .archetype-card .portrait svg{width:100%; height:100%;} /* Added for <use> */
-        .selected-party-grid{display:grid;grid-template-columns:repeat(4, 1fr);gap:10px;}
-        .selected-party-slot{background-color:var(--color-wood-medium);border:2px dashed var(--color-wood-light);padding:10px;min-height:100px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--color-parchment-dark);}
-        .selected-party-slot.filled{border-style:solid;border-color:var(--color-border-dark);background-color:var(--color-wood-light);color:var(--color-text-dark);}
-        .selected-party-slot .name{font-family:var(--font-classic-title);font-size:1.1em;}
-        .selected-party-slot .portrait { width: 40px; height: 40px; margin-left:auto; margin-right:auto; margin-bottom:5px; }
-        .selected-party-slot .portrait svg{width:100%; height:100%;} /* Added for <use> */
-        .selected-party-slot .remove-btn{font-size:0.7em;background-color:#a04040;color:white;padding:2px 5px;border-radius:3px;cursor:pointer;margin-top:5px;}
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="style.css">
 
-        .settings-option { margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
-        .settings-option label { font-size: 1.1em; color: var(--color-parchment-dark); }
-        .settings-option input[type="checkbox"] { width: 20px; height: 20px; }
-        .settings-option input[type="range"] { flex-grow: 1; margin-left: 15px; }
+    <!--
+        Future Visual Enhancements (to be implemented in renderer.js and assets):
+        - Higher resolution, more detailed textures for walls, floors, and objects.
+        - Improved SVG symbols with more depth, shading, and detail.
+        - Dynamic lighting:
+            - Player torch/light source casting realistic shadows.
+            - Flickering lights, magical glows from items/enemies.
+        - Particle effects: dust motes, magic spell effects, combat impacts.
+        - Smoother animations for sprites (enemies, items) and UI transitions.
+        - Post-processing effects: subtle bloom, vignette, color grading for atmosphere.
+        - Potentially a shader-based rendering pipeline if moving beyond pure raycasting for certain effects.
+    -->
 
-        .game-container{display:none; width: 100%; height: 100%;}
-        .game-outer-frame{width:100%;height:100%;padding:10px;background:linear-gradient(145deg, var(--color-stone-medium), var(--color-stone-dark));border-radius:0px;box-shadow:0 0 0 3px var(--color-border-dark), 0 0 20px rgba(0,0,0,0.7);border:1px solid var(--color-stone-light);display:flex;align-items:center;justify-content:center;}
-        .game-wrapper{display:flex;flex-direction:column;width:100%;height:100%;max-width:1280px;max-height:900px;border:3px solid var(--color-border-dark);background-color:var(--color-ui-bg);box-shadow:inset 0 0 15px rgba(0,0,0,0.6);overflow:hidden;}
-        .title-font{font-family:var(--font-classic-title);}
-        .game-top-layout{display:flex;flex-direction:row;flex-grow:1;border-bottom:3px solid var(--color-wood-dark);overflow:hidden;}
-        .main-view-container{flex-grow:3;background-color:#000;position:relative;display:flex;justify-content:center;align-items:center;border-right:3px solid var(--color-wood-dark);box-shadow:inset 0 0 10px #000;overflow:hidden;}
-        canvas#gameCanvas{background-color:transparent;width:100%;height:100%;image-rendering:auto; touch-action: none;}
-        .side-panel-container{width:260px;flex-shrink:0;background-color:var(--color-wood-medium);padding:8px;display:flex;flex-direction:column;gap:8px;overflow-y:auto;}
-        .minimap-area{border:2px solid var(--color-border-dark);background-color:var(--color-ui-bg);padding:5px;box-shadow:inset 0 0 5px rgba(0,0,0,0.5); margin-bottom: 8px; max-height: 220px; /* Max height for map area */}
-        .minimap-area .title-font{text-align:center;color:var(--color-parchment);font-size:1.1em;margin-bottom:5px;border-bottom:1px solid var(--color-wood-light);padding-bottom:3px;}
-        #mapCanvasContainerAutomap{width:100%;height:auto;aspect-ratio: var(--map-aspect-ratio-calc);background:#0a0a0a;border:1px solid var(--color-border-dark);display:flex;justify-content:center;align-items:center; max-height: 180px;} /* Max height for map canvas */
-        canvas#automapCanvas{max-width:100%;max-height:100%;image-rendering:pixelated;}
-        /* Message log area removed from side panel, will be in modal */
-        .game-bottom-layout{display:flex;flex-direction:row;background-color:var(--color-wood-dark);flex-shrink:0;}
-        .party-display-container{display:flex;justify-content:space-around;flex-wrap:nowrap;padding:8px;gap:8px;background:linear-gradient(to bottom, var(--color-wood-medium), var(--color-wood-dark));flex-grow:1;overflow-x:auto; border-right: none;}
-        .party-member{border:3px solid transparent;border-image:url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3ClinearGradient id='stoneBorder' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%23787878;stop-opacity:1'/%3E%3Cstop offset='50%25' style='stop-color:%23585858;stop-opacity:1'/%3E%3Cstop offset='100%25' style='stop-color:%23404040;stop-opacity:1'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect x='0' y='0' width='24' height='24' rx='2' ry='2' fill='transparent' stroke='url(%23stoneBorder)' stroke-width='3'/%3E%3C/svg%3E") 3 stretch;padding:8px;background-color:var(--color-ui-bg);text-align:center;width:130px; height:auto; min-height:160px; font-size:0.75em;color:var(--color-text-light);cursor:pointer;box-shadow:2px 2px 4px rgba(0,0,0,0.5);display:flex;flex-direction:column;justify-content:space-between;flex-shrink:0;}
-        .party-member-portrait{width:70px;height:70px;margin:0 auto 5px auto;background-color:var(--color-stone-dark);border:1px solid var(--color-stone-light);display:flex;align-items:center;justify-content:center;overflow:hidden;}
-        .party-member-portrait svg{width:100%;height:100%;} /* Added for <use> */
-        .party-member.active{border-image-source:url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3ClinearGradient id='goldBorder' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%23F0E68C;stop-opacity:1'/%3E%3Cstop offset='50%25' style='stop-color:%23B8860B;stop-opacity:1'/%3E%3Cstop offset='100%25' style='stop-color:%23DAA520;stop-opacity:1'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect x='0' y='0' width='24' height='24' rx='2' ry='2' fill='transparent' stroke='url(%23goldBorder)' stroke-width='3'/%3E%3C/svg%3E");box-shadow:0 0 10px var(--color-gold-accent), 2px 2px 4px rgba(0,0,0,0.5);}
-        .party-member.fallen{opacity:0.6;background-color:#201010;}
-        .party-member-name{font-family:var(--font-classic-title);color:var(--color-parchment);font-size:1.2em;line-height:1.1; display:flex; align-items:center; justify-content:center;}
-        .party-member-name .weapon-icon { margin-left: 5px; font-size: 1em; width: 1em; height: 1em; display: inline-block;}
-        .party-member-name .weapon-icon svg {width:100%; height:100%; vertical-align: middle;}
-        .party-member-actions { display: flex; justify-content: space-around; align-items: center; margin-top: 6px; height: 30px; }
-        .party-member-actions .action-icon { font-size: 1.8em; color: var(--color-parchment-dark); cursor: pointer; padding: 0 5px; }
-        .party-member-actions .action-icon.disabled { opacity: 0.4; cursor: not-allowed; }
-        .party-member-actions .action-icon:hover:not(.disabled) { color: var(--color-gold-accent); }
-        .party-member-actions .magic-icon { color: #80aaff; }
-        .party-member-actions .magic-icon:hover:not(.disabled) { color: #a0caff; }
-        .party-member-hp,.party-member-mp{font-size:0.9em;}
-        .party-member-hp{color:#e87070;}.party-member-mp{color:#7090e8;}
-        .side-panel-container .action-button-bar{display:flex; flex-direction: column; padding:8px 0;gap:6px;background-color:transparent; width:100%; flex-shrink:0;}
-        .button{font-family:var(--font-classic-title);background:linear-gradient(to bottom, var(--color-stone-light), var(--color-stone-medium));color:var(--color-text-dark);padding:5px;border:2px solid var(--color-stone-dark);border-top-color:var(--color-stone-light);border-left-color:var(--color-stone-light);border-bottom-color:#282828;border-right-color:#282828;border-radius:3px;cursor:pointer;font-size:0.9em;box-shadow:1px 1px 1px rgba(255,255,255,0.1) inset, 1px 1px 2px rgba(0,0,0,0.5);display:flex;flex-direction:row;align-items:center;justify-content:center;gap:5px;transition:all 0.1s ease;min-height:40px; width: 100%;}
-        .button:hover{background:linear-gradient(to bottom, var(--color-stone-medium), var(--color-stone-dark));color:var(--color-parchment);}
-        .button:active{background:linear-gradient(to top, var(--color-stone-light), var(--color-stone-medium));border-top-color:#282828;border-left-color:#282828;border-bottom-color:var(--color-stone-light);border-right-color:var(--color-stone-light);transform:translateY(1px);}
-        .button svg{width:18px;height:18px;fill:currentColor;margin-right:5px; margin-bottom: 0;}
-        .stat-bar{background-color:#302010;border-radius:0px;height:6px;margin-top:1px;border:1px solid #181008;}
-        .stat-bar-fill{background:linear-gradient(to right, #b04040, #d06060);height:100%;}
-        .stat-bar-fill-mp{background:linear-gradient(to right, #4060b0, #6080d0);}
-        .modal-panel{font-family:var(--font-readable-body);background-color:var(--color-parchment);border:5px solid transparent;border-image:url("data:image/svg+xml,%3Csvg width='30' height='30' viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cstyle%3Erect%7Bfill:%23604830; stroke:%23402818; stroke-width:2px; %7D%3C/style%3E%3Crect x='0' y='0' width='30' height='30'/%3E%3C/svg%3E") 5 stretch;padding:20px;z-index:100;display:none;color:var(--color-text-dark);width:90%;max-width:650px;box-shadow:0 5px 25px rgba(0,0,0,0.7);}
-        .modal-title{font-family:var(--font-classic-title);font-size:1.6em;margin-bottom:15px;text-align:center;color:var(--color-text-dark);border-bottom:2px solid var(--color-wood-dark);padding-bottom:10px;}
-        .modal-close-button{position:absolute;top:12px;right:12px;background-color:var(--color-gold-accent);color:var(--color-text-dark);border:2px solid var(--color-border-dark);border-radius:50%;width:30px;height:30px;font-size:16px;line-height:26px;text-align:center;cursor:pointer;font-family:var(--font-classic-title);box-shadow:1px 1px 3px rgba(0,0,0,0.5);}
-        .modal-close-button:hover{background-color:#c8961b;}
-        #inventoryPanel{max-width:750px;}
-        .inventory-layout{display:flex;gap:15px;flex-direction:column;}
-        .inventory-grid-container{flex-grow:1;}
-        .inventory-grid{display:grid;grid-template-columns:repeat(auto-fill, minmax(50px, 1fr));gap:8px;}
-        .inventory-slot{width:50px;height:50px;background-color:var(--color-parchment-dark);border:2px inset var(--color-wood-medium);display:flex;align-items:center;justify-content:center;font-size:24px;position:relative;transition:all 0.1s ease;box-shadow:1px 1px 2px rgba(0,0,0,0.2);}
-        .inventory-slot:hover{background-color:var(--color-parchment);border-color:var(--color-wood-light);}
-        .inventory-slot.equipped{border-color:var(--color-gold-accent);box-shadow:0 0 6px var(--color-gold-accent);background-color:#d8c8b0;}
-        .inventory-slot .item-name-tooltip{font-family:var(--font-readable-body);background-color:rgba(42,26,10,0.95);color:var(--color-parchment);border-radius:2px;padding:4px 6px;font-size:0.75em;border:1px solid var(--color-wood-light); position:absolute; bottom: 105%; left: 50%; transform: translateX(-50%); white-space:nowrap; z-index:10; display:none;}
-        .inventory-slot:hover .item-name-tooltip { display: block; }
-        .inventory-slot svg { width: 30px; height: 30px; } /* For item icons */
-        .item-details-panel{width:100%;padding:12px;background-color:var(--color-wood-light);border:2px solid var(--color-border-dark);color:var(--color-text-dark);box-shadow:inset 0 0 8px rgba(0,0,0,0.4);}
-        .item-details-panel h3{font-family:var(--font-classic-title);font-size:1.3em;color:var(--color-text-dark);margin-bottom:8px;}
-        .item-details-panel p{margin-bottom:4px;font-size:0.95em;line-height:1.5;}
-        .item-details-panel .no-item{color:#7a6a5a;}
-        .item-details-panel hr{border-color:var(--color-wood-dark);}
-        .equipped-info{margin-top:12px;font-size:0.9em;text-align:center;color:var(--color-text-dark);}
-        .equipped-info span{font-family:var(--font-classic-title);color:var(--color-text-dark);font-weight:bold;}
-        #mapPanel{max-width:700px;}#mapPanel .modal-title{font-size:1.4em;}
-         #mapCanvasContainerModal {width:100%;height:auto;aspect-ratio: var(--map-aspect-ratio-calc);background:#0a0a0a;border:1px solid var(--color-border-dark);display:flex;justify-content:center;align-items:center; max-height: 80vh; /* Max height for modal map canvas */}
-        canvas#automapCanvasModal {max-width:100%;max-height:100%;image-rendering:pixelated;}
-        #logbookModal .message-log { height: 300px; }
-
-
-        @media (max-width: 767px) { /* Portrait or small landscape */
-            .game-outer-frame { padding: 5px; } .game-wrapper { border-width: 2px; }
-            .game-top-layout { flex-direction: column; height: auto; }
-            .main-view-container { min-height: 200px; border-right: none; border-bottom: 3px solid var(--color-wood-dark); }
-            .side-panel-container { width: 100%; border-left: none; border-top: 2px solid var(--color-wood-dark); max-height: none; /* Allow side panel to grow in column layout */ }
-            .game-bottom-layout { flex-direction: column; }
-            .party-display-container {
-                border-right: none; border-bottom: 2px solid var(--color-border-dark);
-                display: grid; grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(2, auto);
-                justify-items: stretch; align-items: stretch;
-                overflow-x: visible; gap: 5px; padding: 5px;
-            }
-            .party-member { width: auto; max-width:none; height: auto; min-height: 130px; font-size: 0.7em; }
-            .party-member-portrait { width: 45px; height: 45px; }
-            .side-panel-container .action-button-bar { width: 100%; grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); flex-direction: row; /* Buttons in a row for small screens */ }
-            .button { font-size: 0.75em; min-height: 40px; } .button svg { width: 14px; height: 14px; }
-            .inventory-layout { flex-direction: column; } .item-details-panel { width: 100%; margin-top:10px; }
-        }
-        @media (max-width: 767px) and (orientation: portrait) {
-            .side-panel-container { display: none; }
-            .main-view-container { border-right: none; }
-            .game-bottom-layout { border-top: 3px solid var(--color-wood-dark); } /* Add separator if side panel is gone */
-            .party-display-container { border-right:none; } /* No border if action bar is below */
-            /* For portrait, action buttons might need to be elsewhere or smaller if side panel is hidden */
-        }
-         @media (min-width: 768px) and (max-width: 1023px) { /* Tablet landscape */
-            .side-panel-container { width: 250px; }
-            .party-member { width: 110px; height: 140px; }
-        }
-    </style>
+    <!--
+        Future Audio Enhancements (to be implemented in music.js and sfx.js):
+        - More complex and layered musical themes for menus, exploration, and combat.
+        - Dynamic music transitions based on game state.
+        - Richer sound effects for actions, environment, UI interactions, and magic.
+        - Spatial audio for enemy sounds and environmental cues.
+    -->
 </head>
 <body>
-    <div id="mainMenuModal" class="modal-overlay" style="display: flex;"> <div class="modal-content" style="max-width: 400px;">
+    <!-- Main Menu Modal -->
+    <div id="mainMenuModal" class="modal-overlay" style="display: flex;">
+        <div class="modal-content" style="max-width: 400px;">
             <h2 class="modal-title-text">The Sundered Amulet</h2>
             <button id="newGameBtn" class="modal-button">New Game</button>
             <button id="resumeGameBtn" class="modal-button">Resume Game</button>
             <button id="settingsBtn" class="modal-button">Settings</button>
+            <button id="creditsBtn" class="modal-button">Credits</button>
         </div>
     </div>
 
+    <!-- Party Configuration Modal -->
     <div id="partyConfigModal" class="modal-overlay">
-        <div class="modal-content party-config-content" style="max-width:700px;"> <!-- Increased max-width for party config -->
+        <div class="modal-content party-config-content">
             <h2 class="modal-title-text party-config-title">Assemble Your Adventuring Party</h2>
             <div class="archetype-selection-area">
                 <h3>Choose Your Heroes (Select 4):</h3>
@@ -175,68 +57,117 @@
                 <h3>Your Party:</h3>
                 <div id="selectedPartyGrid" class="selected-party-grid"></div>
             </div>
-            <button id="startGameButton" class="modal-button" style="max-width: 300px;" disabled>Start Adventure</button>
-             <button id="backToMainMenuFromPartyConfigBtn" class="modal-button" style="max-width: 300px; background-color: var(--color-wood-medium);">Back to Main Menu</button>
+            <button id="startGameButton" class="modal-button" disabled>Start Adventure</button>
+            <button id="backToMainMenuFromPartyConfigBtn" class="modal-button secondary">Back to Main Menu</button>
         </div>
     </div>
 
+    <!-- Settings Modal -->
     <div id="settingsModal" class="modal-overlay">
         <div class="modal-content" style="max-width: 500px;">
             <h2 class="modal-title-text">Settings</h2>
-            <div class="settings-option">
-                <label for="musicToggle">Music:</label>
-                <input type="checkbox" id="musicToggle" checked>
-            </div>
-            <div class="settings-option">
-                <label for="volumeSlider">Volume:</label>
-                <input type="range" id="volumeSlider" min="0" max="1" step="0.05" value="0.5">
-            </div>
-             <button id="resetPartyAndDataBtn" class="modal-button" style="background-color: #c0392b; color: white;">Reset All Game Data</button>
-            <button id="closeSettingsBtn" class="modal-button" style="background-color: var(--color-wood-medium);">Close Settings</button>
-        </div>
-    </div>
-
-    <div id="logbookModal" class="modal-overlay">
-        <div class="modal-content" style="max-width: 600px;">
-            <h2 class="modal-title-text">Logbook</h2>
-            <div id="logbookContent" class="message-log" style="max-height: 70vh; color: var(--color-text-dark); background-color: var(--color-parchment-dark); padding: 10px; border: 1px solid var(--color-wood-dark); overflow-y: auto;">
+            <div class="settings-group">
+                <div class="settings-option">
+                    <label for="musicToggle">Music:</label>
+                    <input type="checkbox" id="musicToggle" class="styled-checkbox" checked>
                 </div>
-            <button id="closeLogbookBtn" class="modal-button" style="background-color: var(--color-wood-medium); margin-top: 15px;">Close Logbook</button>
+                <div class="settings-option">
+                    <label for="sfxToggle">Sound Effects:</label>
+                    <input type="checkbox" id="sfxToggle" class="styled-checkbox" checked>
+                </div>
+                <div class="settings-option">
+                    <label for="volumeSlider">Master Volume:</label>
+                    <input type="range" id="volumeSlider" min="0" max="1" step="0.05" value="0.5">
+                </div>
+            </div>
+            <button id="resetPartyAndDataBtn" class="modal-button danger">Reset All Game Data</button>
+            <button id="closeSettingsBtn" class="modal-button secondary">Close Settings</button>
         </div>
     </div>
 
+    <!-- Logbook Modal -->
+    <div id="logbookModal" class="modal-overlay">
+        <div class="modal-content">
+            <h2 class="modal-title-text">Logbook</h2>
+            <div id="logbookContent" class="message-log"></div>
+            <button id="closeLogbookBtn" class="modal-button secondary">Close Logbook</button>
+        </div>
+    </div>
 
+    <!-- Credits Modal -->
+    <div id="creditsModal" class="modal-overlay">
+        <div class="modal-content">
+            <h2 class="modal-title-text">Credits</h2>
+            <div id="creditsContent" class="credits-content-area">
+                <p><strong>The Sundered Amulet</strong></p>
+                <p>Original Concept & Development: Florian Feldhaus</p>
+                <p>Enhanced Edition AI Assistant: You!</p>
+                <p>Assets: Various (Details TBD)</p>
+                <p>Music Engine: Tone.js</p>
+                <p>Special Thanks: All players and testers.</p>
+            </div>
+            <button id="closeCreditsBtn" class="modal-button secondary">Close</button>
+        </div>
+    </div>
+
+    <!-- Game Container -->
     <div id="gameContainer" class="game-container">
         <div class="game-outer-frame">
             <div class="game-wrapper">
+                <!-- Top Layout: Main View & Side Panel -->
                 <div class="game-top-layout">
-                    <div class="main-view-container"><canvas id="gameCanvas"></canvas></div>
-                    <div class="side-panel-container">
-                        <div class="minimap-area">
-                            <h3 class="title-font">Automap Lvl <span id="mapDungeonLevelIndicator">1</span></h3>
-                            <div id="mapCanvasContainerAutomap"><canvas id="automapCanvas"></canvas></div> <!-- Changed ID for clarity -->
+                    <div class="main-view-container">
+                        <canvas id="gameCanvas"></canvas>
+                        <!-- Touch controls overlay (optional, can be dynamically added) -->
+                        <div id="touchControlsOverlay" class="touch-controls-overlay" style="display: none;">
+                            <div class="touch-zone touch-zone-left" data-action="turn-left"><span><</span></div>
+                            <div class="touch-zone touch-zone-forward" data-action="move-forward"><span>ˆ</span></div>
+                            <div class="touch-zone touch-zone-right" data-action="turn-right"><span>></span></div>
+                            <div class="touch-zone touch-zone-action" data-action="action"><span>Interact</span></div>
+                            <div class="touch-zone touch-zone-prev-char" data-action="prev-char"><span>P</span></div>
+                            <div class="touch-zone touch-zone-next-char" data-action="next-char"><span>N</span></div>
                         </div>
-                        <div class="action-button-bar" id="sideActionButtons">
-                             <button id="actionCharacter" class="button"> <svg viewBox="0 0 24 24"><path d="M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z"/></svg>
-                                <span>Character</span>
-                            </button>
-                            <button id="actionMap" class="button"><svg viewBox="0 0 24 24"><path d="M14.5,3L16,4.5L14.5,6L13,4.5L14.5,3M9.5,3L11,4.5L9.5,6L8,4.5L9.5,3M14.5,21L16,19.5L14.5,18L13,19.5L14.5,21M9.5,21L11,19.5L9.5,18L8,19.5L9.5,21M17,6L22,11V13L17,18V6M7,6L2,11V13L7,18V6M12,11.5A1.5,1.5 0 0,0 10.5,13A1.5,1.5 0 0,0 12,14.5A1.5,1.5 0 0,0 13.5,13A1.5,1.5 0 0,0 12,11.5Z"/></svg><span>Map</span></button>
-                            <button id="actionLogbook" class="button"><svg viewBox="0 0 24 24"><path d="M6,2A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V4A2,2 0 0,0 18,2H6M6,4H18V20H6V4M8,6V8H16V6H8M8,10V12H16V10H8M8,14V16H13V14H8Z" /></svg><span>Logbook</span></button>
-                            <button id="actionMenu" class="button"><svg viewBox="0 0 24 24"><path d="M3,6H21V8H3V6M3,11H21V13H3V11M3,16H21V18H3V16Z" /></svg><span>Menu</span></button>
-                        </div>
-                        </div>
-                </div>
-                <div class="game-bottom-layout">
-                    <div class="party-display-container" id="partyDisplay"></div>
                     </div>
+                    <div id="sidePanel" class="side-panel-container">
+                        <div class="minimap-area">
+                            <h3 class="panel-title">Automap Lvl <span id="mapDungeonLevelIndicator">1</span></h3>
+                            <div id="mapCanvasContainerAutomap"><canvas id="automapCanvas"></canvas></div>
+                        </div>
+                        <div id="quickActionsBar" class="action-button-bar">
+                            <!-- Buttons will be populated by UI module -->
+                        </div>
+                    </div>
+                </div>
+                <!-- Bottom Layout: Party Display & Mobile Actions -->
+                <div class="game-bottom-layout">
+                    <div class="party-display-container" id="partyDisplay">
+                        <!-- Party members will be populated by UI module -->
+                    </div>
+                    <div id="mobileActionsPanel" class="mobile-actions-panel">
+                        <!-- Mobile-specific action buttons, or menu toggles for side panel items -->
+                         <button id="mobileMenuToggle" class="button icon-button"><span>☰</span></button>
+                         <button id="mobileCharacterToggle" class="button icon-button"><span></span></button>
+                         <button id="mobileMapToggle" class="button icon-button"><span></span></button>
+                         <button id="mobileLogToggle" class="button icon-button"><span></span></button>
+                    </div>
+                </div>
             </div>
         </div>
+
+        <!-- Character/Inventory Panel (Modal) -->
         <div id="inventoryPanel" class="modal-panel">
-            <div id="closeInventory" class="modal-close-button">X</div>
-            <h2 class="modal-title title-font">Character Overview - <span id="inventoryCharacterName" class="title-font">Character</span></h2>
+            <button id="closeInventory" class="modal-close-button">×</button>
+            <h2 class="modal-title title-font">Character - <span id="inventoryCharacterName" class="title-font">Name</span></h2>
             <div class="inventory-layout">
+                <div class="character-stats-panel">
+                    <h3 class="panel-title">Stats</h3>
+                    <div id="inventoryCharStats"></div>
+                     <div class="portrait-area">
+                        <svg id="inventoryCharPortrait" viewBox="0 0 100 100" class="character-portrait-large"></svg>
+                    </div>
+                </div>
                 <div class="inventory-grid-container">
-                    <h3 class="title-font text-center text-sm">Inventory</h3>
+                    <h3 class="panel-title">Inventory</h3>
                     <div id="inventoryGrid" class="inventory-grid"></div>
                     <div class="equipped-info">
                         Weapon: <span id="equippedWeaponName" class="title-font">None</span><br>
@@ -244,1228 +175,38 @@
                     </div>
                 </div>
                 <div id="itemDetailsPanel" class="item-details-panel">
-                    <h3 class="title-font">Item Details</h3>
-                    <div id="itemDetailContent"><p class="no-item">Select an item to see details.</p></div>
+                    <h3 class="panel-title">Item Details</h3>
+                    <div id="itemDetailContent"><p class="placeholder-text">Select an item.</p></div>
+                    <div id="itemActions" class="item-actions-container">
+                        <!-- Item action buttons (Equip, Use, Drop) populated by UI -->
+                    </div>
                 </div>
             </div>
-            </div>
+        </div>
+
+        <!-- Full Map Panel (Modal) -->
         <div id="mapPanel" class="modal-panel">
-            <div id="closeMap" class="modal-close-button">X</div>
+            <button id="closeMap" class="modal-close-button">×</button>
             <h2 class="modal-title title-font">Dungeon Level <span id="mapDungeonLevel">1</span> - Automap</h2>
             <div id="mapCanvasContainerModal"><canvas id="automapCanvasModal"></canvas></div>
             <p class="text-center mt-3 text-sm">Explored areas of the current level.</p>
         </div>
     </div>
 
-    <script>
-        // --- Asset Manager ---
-        const AssetManager = {
-            svgDoc: null,
-            imageCache: {},
-            isInitialized: false,
-            initPromise: null,
+    <!-- Load SVG Assets (hidden) -->
+    <div id="svgAssetContainer" style="display: none;"></div>
+
+    <!-- JavaScript Modules -->
+    <script src="config.js" type="module"></script>
+    <script src="assets.js" type="module"></script>
+    <script src="music.js" type="module"></script>
+    <!-- <script src="sfx.js" type="module"></script> --> <!-- Placeholder for Sound Effects -->
+    <script src="utils.js" type="module"></script>
+    <script src="ui.js" type="module"></script>
+    <script src="renderer.js" type="module"></script>
+    <script src="input.js" type="module"></script>
+    <script src="game.js" type="module"></script>
+    <script src="main.js" type="module"></script>
 
-            init(svgPath = 'assets.svg') {
-                if (!this.initPromise) {
-                    this.initPromise = this._loadSVGAssets(svgPath);
-                }
-                return this.initPromise;
-            },
-
-            async _loadSVGAssets(svgPath) {
-                try {
-                    const response = await fetch(svgPath);
-                    if (!response.ok) {
-                        throw new Error(`Failed to load SVG assets: ${response.statusText}`);
-                    }
-                    const svgText = await response.text();
-                    const parser = new DOMParser();
-                    this.svgDoc = parser.parseFromString(svgText, "image/svg+xml");
-                    if (this.svgDoc.getElementsByTagName("parsererror").length > 0) {
-                        throw new Error("Error parsing SVG file.");
-                    }
-                    this.isInitialized = true;
-                    console.log("SVG assets loaded successfully.");
-                } catch (error) {
-                    console.error("Error loading SVG assets:", error);
-                    this.isInitialized = false; 
-                    throw error; 
-                }
-            },
-
-            getSymbolAsImage(symbolId, options = { width: 100, height: 100 }) {
-                if (!this.isInitialized || !this.svgDoc) {
-                    const placeholder = new Image(options.width, options.height);
-                    return placeholder;
-                }
-
-                const cacheKey = `${symbolId}_${options.width}x${options.height}`;
-                if (this.imageCache[cacheKey]) { // Return cached image, complete or not
-                     return this.imageCache[cacheKey];
-                }
-
-                const symbolNode = this.svgDoc.getElementById(symbolId);
-                if (!symbolNode) {
-                    console.warn(`Symbol with id "${symbolId}" not found. Returning placeholder.`);
-                    const placeholder = new Image(options.width, options.height);
-                    this.imageCache[cacheKey] = placeholder; 
-                    return placeholder;
-                }
-
-                const viewBox = symbolNode.getAttribute("viewBox") || `0 0 ${options.width} ${options.height}`;
-                const svgString = `<svg width="${options.width}" height="${options.height}" viewBox="${viewBox}" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">${symbolNode.innerHTML}</svg>`;
-
-                const img = new Image(options.width, options.height);
-                const sanitizedSvgString = svgString.replace(/#/g, '%23').replace(/\n/g, "").replace(/>\s+</g, "><").replace(/"/g, "'");
-                
-                img.src = "data:image/svg+xml;charset=utf-8," + sanitizedSvgString;
-                this.imageCache[cacheKey] = img;
-                return img;
-            },
-
-            getUseElementString(symbolId, classes = "", width = "100%", height = "100%", viewBox = "0 0 100 100") {
-                 if (!this.isInitialized) {
-                    return `<svg class="${classes}" width="${width}" height="${height}" viewBox="${viewBox}"><rect width="100%" height="100%" fill="#ff00ff"/></svg>`; 
-                }
-                const symbolExists = this.svgDoc ? this.svgDoc.getElementById(symbolId) : false;
-                if (!symbolExists && symbolId !== 'portrait-placeholder') { 
-                    symbolId = 'portrait-placeholder'; 
-                }
-                return `<svg class="${classes}" width="${width}" height="${height}" viewBox="${viewBox}" preserveAspectRatio="xMidYMid meet"><use xlink:href="assets.svg#${symbolId}"></use></svg>`;
-            }
-        };
-
-
-        // --- Game Constants & DOM Elements ---
-        const mainMenuModalEl = document.getElementById('mainMenuModal');
-        const newGameBtn = document.getElementById('newGameBtn');
-        const resumeGameBtn = document.getElementById('resumeGameBtn');
-        const settingsBtn = document.getElementById('settingsBtn');
-        const settingsModalEl = document.getElementById('settingsModal');
-        const musicToggleEl = document.getElementById('musicToggle');
-        const volumeSliderEl = document.getElementById('volumeSlider');
-        const closeSettingsBtn = document.getElementById('closeSettingsBtn');
-        const backToMainMenuFromPartyConfigBtn = document.getElementById('backToMainMenuFromPartyConfigBtn');
-        const actionMenuBtn = document.getElementById('actionMenu');
-        const resetPartyAndDataBtn = document.getElementById('resetPartyAndDataBtn');
-        const logbookModalEl = document.getElementById('logbookModal');
-        const logbookContentEl = document.getElementById('logbookContent');
-        const closeLogbookBtn = document.getElementById('closeLogbookBtn');
-        const actionLogbookBtn = document.getElementById('actionLogbook');
-
-
-        let TILE_SIZE = 20;
-        const MAP_WIDTH_TILES = 10; 
-        const MAP_HEIGHT_TILES = 10; 
-        const INVENTORY_SLOTS = 12; const MAX_PARTY_SIZE = 4; const AUTOMAP_TILE_SIZE = 10;
-        const FOV = Math.PI / 3; const RAY_COUNT = 120; const MAX_RAY_DEPTH = 15;
-        const MAX_LOG_MESSAGES = 100;
-
-
-        const gameContainerEl = document.getElementById('gameContainer');
-        const partyConfigModalEl = document.getElementById('partyConfigModal');
-        const archetypeGridEl = document.getElementById('archetypeGrid');
-        const selectedPartyGridEl = document.getElementById('selectedPartyGrid');
-        const startGameButton = document.getElementById('startGameButton');
-        const canvas = document.getElementById('gameCanvas'); const ctx = canvas.getContext('2d');
-        const partyDisplayEl = document.getElementById('partyDisplay');
-        const mapDungeonLevelIndicatorEl = document.getElementById('mapDungeonLevelIndicator');
-        const inventoryPanelEl = document.getElementById('inventoryPanel');
-        const inventoryGridEl = document.getElementById('inventoryGrid');
-        const inventoryCharacterNameEl = document.getElementById('inventoryCharacterName');
-        const equippedWeaponNameEl = document.getElementById('equippedWeaponName');
-        const equippedArmorNameEl = document.getElementById('equippedArmorName');
-        const itemDetailsPanelEl = document.getElementById('itemDetailsPanel');
-        const itemDetailContentEl = document.getElementById('itemDetailContent');
-        const closeInventoryBtn = document.getElementById('closeInventory');
-        const mapPanelEl = document.getElementById('mapPanel');
-        const mapDungeonLevelEl = document.getElementById('mapDungeonLevel');
-        const closeMapBtn = document.getElementById('closeMap'); 
-        
-        const automapCanvas = document.getElementById('automapCanvas'); const automapCtx = automapCanvas.getContext('2d');
-        const automapCanvasModal = document.getElementById('automapCanvasModal'); const automapModalCtx = automapCanvasModal.getContext('2d');
-
-
-        const TILES = { FLOOR: 0, WALL: 1, STAIRS_DOWN: 2, DOOR_WOOD: 3, CHEST: 4 };
-        const ITEM_TYPES = { WEAPON: 'weapon', ARMOR: 'armor', POTION: 'potion' };
-        const WEAPON_PREFIXES = ["Rusty", "Iron", "Steel", "Elven", "Dwarven", "Mithril", "Adamant", "Ancient"];
-        const WEAPON_NAMES = ["Dagger", "Shortsword", "Longsword", "Broadsword", "Battle Axe", "Warhammer", "Maul", "Shortbow", "Longbow", "Crossbow", "Sling", "Staff", "Wand"];
-        const ARMOR_PREFIXES = ["Padded", "Leather", "Studded", "Scale", "Chainmail", "Splint", "Plate", "Dragonscale", "Mystic"];
-        const ARMOR_NAMES = ["Robes", "Jerkin", "Cuirass", "Armor", "Helm", "Shield", "Gauntlets", "Boots", "Cloak", "Amulet"];
-        const POTION_TYPES = ["Healing", "Mana", "Strength", "Defense", "Speed", "Clarity", "Resistance", "Invisibility"];
-        const ENEMY_ADJECTIVES = ["Foul", "Grim", "Dread", "Shadow", "Plague", "Stone", "Cavern", "Ancient", "Dire", "Hellish"];
-        const ENEMY_NOUNS = ["Goblin", "Kobold", "Orc", "Gnoll", "Skeleton", "Zombie", "Ghoul", "Gargoyle", "Ogre", "Troll", "Minotaur", "Beholderkin", "Imp"];
-        const ENEMY_EMOJIS = ['👺', '🦎', '👹', '🐺', '💀', '🧟', '👻', '🗿', '🦍', '🤢', '🐂', '👁️', '👿'];
-
-
-        // --- Game State & Party Configuration ---
-        let party = [];
-        let player = { x: 1, y: 1, angle: 0, dx: 1, dy: 0 };
-        let activeCharacterIndex = 0;
-        let exploredMap = [];
-        let enemies = []; let itemsOnMap = [];
-        let currentTurn = 'uninitialized'; let dungeonLevel = 1; let selectedInventoryItemIndex = -1;
-        const testMap3D = [
-            [1,1,1,1,1,1,1,1,1,1],
-            [1,0,0,0,1,0,0,0,0,1],
-            [1,0,1,1,1,0,1,1,0,1],
-            [1,0,0,0,0,0,0,1,0,1],
-            [1,1,{type: TILES.DOOR_WOOD, isOpen: false, textureSet: 'DUNGEON'},0,1,1,0,1,0,1],
-            [1,0,0,0,1,0,0,0,0,1],
-            [1,0,1,1,1,0,1,1,0,1],
-            [1,0,0,0,0,0,0,1,0,1],
-            [1,0,1,1,1,1,1,1,0,1],
-            [1,1,1,1,1,1,1,1,1,1],
-        ];
-        const TEST_MAP_WIDTH = testMap3D[0].length; const TEST_MAP_HEIGHT = testMap3D.length;
-        const availableArchetypes = [
-            { id: 'warrior', name: "Warrior", hp: 120, mp: 30, attack: 12, defense: 6, gameEmoji: '⚔️', description: "Sturdy melee fighter.", spellcaster: false, portraitSVG: 'portrait-warrior' },
-            { id: 'mage', name: "Mage", hp: 80, mp: 70, attack: 7, defense: 3, gameEmoji: '🧙', description: "Master of arcane arts.", spellcaster: true, portraitSVG: 'portrait-mage' },
-            { id: 'ranger', name: "Ranger", hp: 100, mp: 40, attack: 10, defense: 4, gameEmoji: '🏹', description: "Agile archer & scout.", spellcaster: false, portraitSVG: 'portrait-ranger' },
-            { id: 'knight', name: "Knight", hp: 150, mp: 20, attack: 10, defense: 8, gameEmoji: '🛡️', description: "Heavily armored defender.", spellcaster: false, portraitSVG: 'portrait-knight' },
-            { id: 'rogue', name: "Rogue", hp: 90, mp: 35, attack: 11, defense: 4, gameEmoji: '🔪', description: "Cunning and stealthy.", spellcaster: false, portraitSVG: 'portrait-rogue' },
-            { id: 'cleric', name: "Cleric", hp: 95, mp: 60, attack: 8, defense: 5, gameEmoji: '✝️', description: "Healer and divine caster.", spellcaster: true, portraitSVG: 'portrait-cleric' },
-        ];
-        let selectedPartyArchetypes = [];
-        function populateArchetypeSelection() { archetypeGridEl.innerHTML = ''; availableArchetypes.forEach(arch => { const card = document.createElement('div'); card.classList.add('archetype-card'); card.innerHTML = `<div class="portrait">${AssetManager.getUseElementString(arch.portraitSVG, '', '50px', '50px')}</div><h4>${arch.name}</h4><p>HP: ${arch.hp} MP: ${arch.mp}</p><p>Atk: ${arch.attack} Def: ${arch.defense}</p><p class="text-xs italic">${arch.description}</p>`; card.onclick = () => selectArchetype(arch); archetypeGridEl.appendChild(card); }); }
-        function selectArchetype(archetype) { if (selectedPartyArchetypes.length < MAX_PARTY_SIZE) { if (!selectedPartyArchetypes.find(a => a.id === archetype.id)) { selectedPartyArchetypes.push(archetype); updateSelectedPartyDisplay(); } else { alert(`${archetype.name} is already in your party! Choose a different hero.`); } } if (selectedPartyArchetypes.length === MAX_PARTY_SIZE) { startGameButton.disabled = false; startGameButton.style.opacity = "1"; startGameButton.style.cursor = "pointer"; } }
-        function removeArchetypeFromParty(index) { selectedPartyArchetypes.splice(index, 1); updateSelectedPartyDisplay(); startGameButton.disabled = true; startGameButton.style.opacity = "0.5"; startGameButton.style.cursor = "not-allowed"; }
-        function updateSelectedPartyDisplay() { selectedPartyGridEl.innerHTML = ''; for (let i = 0; i < MAX_PARTY_SIZE; i++) { const slot = document.createElement('div'); slot.classList.add('selected-party-slot'); if (selectedPartyArchetypes[i]) { const arch = selectedPartyArchetypes[i]; slot.classList.add('filled'); slot.innerHTML = `<div class="portrait">${AssetManager.getUseElementString(arch.portraitSVG, '', '40px', '40px')}</div><div class="name">${arch.name}</div><button class="remove-btn" onclick="removeArchetypeFromParty(${i})">Remove</button>`; } else { slot.textContent = `Slot ${i + 1}`; } selectedPartyGridEl.appendChild(slot); } }
-        function finalizePartyAndStartGame() {
-            if (selectedPartyArchetypes.length !== MAX_PARTY_SIZE) { alert(`Please select ${MAX_PARTY_SIZE} members for your party.`); return; }
-            party = selectedPartyArchetypes.map(arch => createCharacter( arch.name, arch.hp, arch.mp, arch.attack, arch.defense, arch.gameEmoji, arch.name.substring(0,3).toUpperCase(), arch.portraitSVG, arch.spellcaster ));
-            try { localStorage.setItem('chosenRPGParty', JSON.stringify(selectedPartyArchetypes.map(a => a.id))); } catch (e) { console.error("Could not save party to localStorage:", e); }
-            party[0].gold = 100; activeCharacterIndex = 0;
-            player.x = 1; player.y = 1; player.angle = 0;
-            player.dx = Math.round(Math.cos(player.angle)); player.dy = Math.round(Math.sin(player.angle));
-            partyConfigModalEl.style.display = 'none'; gameContainerEl.style.display = 'flex'; initGame();
-        }
-        startGameButton.onclick = finalizePartyAndStartGame;
-        function createCharacter(name, hp, mp, attack, defense, gameEmoji, type, portraitSVG, isSpellcaster) { 
-            return { name: name, type: type, portraitSVG: portraitSVG, spellcaster: isSpellcaster, hp: hp, maxHp: hp, mp: mp, maxMp: mp, attack: attack, baseAttack: attack, defense: defense, baseDefense: defense, level: 1, xp: 0, nextLevelXp: 100, inventory: [], equippedWeapon: null, equippedArmor: null, emoji: gameEmoji, isAlive: true, hasActedThisTurn: false };
-        }
-
-        // --- Map, Procedural Gen, UI, Game Logic ---
-        function initExploredMap() { exploredMap = Array(TEST_MAP_HEIGHT).fill(null).map(() => Array(TEST_MAP_WIDTH).fill(0)); }
-        function revealTile(x, y) { if (x >= 0 && x < TEST_MAP_WIDTH && y >= 0 && y < TEST_MAP_HEIGHT) exploredMap[y][x] = 1; }
-        
-        function generateItem(level) { 
-            const itemTypeRoll = Math.random(); 
-            let item = { name: "", type: null, attack: 0, defense: 0, hp: 0, mp: 0, value: 0, effect: null, emoji: '?', ranged: false, description: "An item of curious make.", svgIcon: 'icon-potion-generic' }; 
-            if (itemTypeRoll < 0.45) { 
-                item.type = ITEM_TYPES.WEAPON; 
-                const prefix = WEAPON_PREFIXES[Math.floor(Math.random()*WEAPON_PREFIXES.length)]; 
-                let name = WEAPON_NAMES[Math.floor(Math.random()*WEAPON_NAMES.length)]; 
-                item.name = `${prefix} ${name}`; 
-                item.attack = Math.floor(Math.random()*2*level)+level+(WEAPON_PREFIXES.indexOf(prefix)); 
-                item.svgIcon = 'icon-sword';
-                if (name.includes("bow")||name.includes("Sling")||name.includes("Crossbow")){item.ranged=true;item.emoji='🏹';item.description="A ranged weapon.";} 
-                else if (name.includes("Staff")||name.includes("Wand")){item.emoji='🔱';item.attack=Math.max(1,item.attack-1);item.mp=5+level*2;item.description="A mystical implement.";} 
-                else {item.emoji='⚔️';item.description="A melee weapon."} 
-                item.value = item.attack*6+(item.ranged?15:0)+(item.mp?item.mp*3:0); 
-            } else if (itemTypeRoll < 0.8) { 
-                item.type = ITEM_TYPES.ARMOR; 
-                const prefix = ARMOR_PREFIXES[Math.floor(Math.random()*ARMOR_PREFIXES.length)]; 
-                const name = ARMOR_NAMES[Math.floor(Math.random()*ARMOR_NAMES.length)]; 
-                item.name = `${prefix} ${name}`; 
-                item.defense = Math.floor(Math.random()*1.5*level)+Math.floor(level/2)+(ARMOR_PREFIXES.indexOf(prefix)); 
-                item.svgIcon = 'icon-shield';
-                if (name.includes("Robes")||name.includes("Cloak")){item.emoji='🧥';item.defense=Math.max(1,item.defense-1);item.mp=3+level;item.description="Lightweight garb.";} 
-                else if (name.includes("Shield")){item.emoji='🛡️';item.description="A solid shield."} 
-                else if (name.includes("Amulet")){item.emoji='💠'; item.svgIcon='icon-potion-generic'; item.defense=Math.max(1, Math.floor(item.defense/2)); item.mp = 5 + level*2; item.description="A magical amulet."} 
-                else {item.emoji='🥋';item.description="Protective armor."} 
-                item.value = item.defense*7+(item.mp?item.mp*3:0); 
-            } else { 
-                item.type = ITEM_TYPES.POTION; 
-                const potionType = POTION_TYPES[Math.floor(Math.random()*POTION_TYPES.length)]; 
-                item.name = `${potionType} Potion`; 
-                item.value = (12+Math.floor(Math.random()*6))*level; 
-                item.emoji = '🧪'; 
-                const effectMagnitude = (18+Math.floor(Math.random()*12))*level; 
-                item.description = `A ${potionType.toLowerCase()} potion.`; 
-                if (potionType==="Healing"){item.hp=effectMagnitude; item.svgIcon='icon-potion'; item.effect=(target)=>{target.hp=Math.min(target.maxHp,target.hp+item.hp);addMessage(`${target.name} healed ${item.hp} HP.`);};} 
-                else if (potionType==="Mana"){item.mp=Math.floor(effectMagnitude/1.5); item.svgIcon='icon-potion-mana'; item.effect=(target)=>{target.mp=Math.min(target.maxMp,target.mp+item.mp);addMessage(`${target.name} restored ${item.mp} MP.`);};} 
-                else { item.svgIcon='icon-potion-generic'; item.effect=(target)=>{if(potionType==="Strength")target.baseAttack+=(1+Math.floor(level/2.5)); if(potionType==="Defense")target.baseDefense+=(1+Math.floor(level/2.5)); addMessage(`${target.name} feels effects of ${potionType} Potion.`);updatePartyStats();};}
-            } 
-            return item; 
-        }
-        function generateEnemy(level,x,y){ const adj=ENEMY_ADJECTIVES[Math.floor(Math.random()*ENEMY_ADJECTIVES.length)]; const noun=ENEMY_NOUNS[Math.floor(Math.random()*ENEMY_NOUNS.length)]; const emojiIndex=ENEMY_NOUNS.indexOf(noun); let emoji=ENEMY_EMOJIS[emojiIndex!==-1?emojiIndex:Math.floor(Math.random()*ENEMY_EMOJIS.length)]; let svgIcon = 'enemy-goblin'; if(noun.includes("Skeleton")) {svgIcon = 'enemy-skeleton'; emoji='💀';} else if (noun.includes("Goblin")||noun.includes("Orc")||noun.includes("Gnoll")||noun.includes("Imp")) {svgIcon = 'enemy-goblin'; emoji='👺';} return{x,y,name:`${adj} ${noun}`,hp:Math.floor(Math.random()*9*level)+(20*level),maxHp:Math.floor(Math.random()*9*level)+(20*level),attack:Math.floor(Math.random()*2.5*level)+(3.5*level)+Math.floor(level/2),defense:Math.floor(Math.random()*1.2*level)+Math.floor(level/1.2),xpValue:(12+Math.floor(Math.random()*7))*level,goldValue:Math.floor(Math.random()*8*level)+(4*level),emoji:emoji, svgIcon: svgIcon, loot:Math.random()<(0.33+level*0.035)?generateItem(level):null};}
-        function populateEnemies(rooms){ enemies=[];const numEnemies=Math.floor(Math.random()*2)+1; for(let i=0;i<numEnemies;i++){ let placed = false; while(!placed){ const ex = Math.floor(Math.random()*TEST_MAP_WIDTH); const ey = Math.floor(Math.random()*TEST_MAP_HEIGHT); if(testMap3D[ey] && testMap3D[ey][ex] === 0 && (ex !== player.x || ey !== player.y) && !enemies.find(e=>e.x===ex && e.y===ey) ){ enemies.push(generateEnemy(dungeonLevel,ex,ey)); placed = true;}} } }
-        function populateItems(rooms){ itemsOnMap=[]; const numItems=Math.floor(Math.random()*2)+1; for(let i=0;i<numItems;i++){ let placed = false; while(!placed){ const ix = Math.floor(Math.random()*TEST_MAP_WIDTH); const iy = Math.floor(Math.random()*TEST_MAP_HEIGHT); if(testMap3D[iy] && testMap3D[iy][ix] === 0 && (ix !== player.x || iy !== player.y) && !itemsOnMap.find(it=>it.x===ix && it.y===iy) ){ itemsOnMap.push({...generateItem(dungeonLevel),x:ix,y:iy}); placed = true;}} } }
-
-        // --- 3D Rendering ---
-        function draw() {
-            const screenWidth = canvas.width;
-            const screenHeight = canvas.height;
-
-            ctx.fillStyle = 'var(--color-ceiling)';
-            ctx.fillRect(0, 0, screenWidth, screenHeight / 2);
-
-            const floorTexture = AssetManager.getSymbolAsImage('floor-stone', { width: 64, height: 64 });
-            if (floorTexture.complete && floorTexture.naturalWidth > 0) {
-                ctx.fillStyle = ctx.createPattern(floorTexture, 'repeat');
-                ctx.fillRect(0, screenHeight / 2, screenWidth, screenHeight / 2);
-            } else {
-                ctx.fillStyle = 'var(--color-floor-base)';
-                ctx.fillRect(0, screenHeight / 2, screenWidth, screenHeight / 2);
-                if (!floorTexture.dataset.loadHandlersAttached) { 
-                    floorTexture.onload = () => { 
-                        floorTexture.dataset.loadHandlersAttached = 'true';
-                        if(gameContainerEl.style.display === 'flex' && currentTurn !== 'uninitialized') requestAnimationFrame(draw); 
-                    };
-                    floorTexture.onerror = () => { 
-                        console.error("Floor texture failed to load."); 
-                        floorTexture.dataset.loadHandlersAttached = 'true';
-                    };
-                    floorTexture.dataset.loadHandlersAttached = 'true';
-                }
-            }
-
-            let zBuffer = new Array(RAY_COUNT).fill(MAX_RAY_DEPTH);
-            let spritesToRender = [];
-
-            for (let i = 0; i < RAY_COUNT; i++) {
-                const rayAngle = (player.angle - FOV / 2) + (FOV * i) / RAY_COUNT;
-                const raySin = Math.sin(rayAngle);
-                const rayCos = Math.cos(rayAngle);
-
-                let distToWall = 0;
-                let hitWall = false;
-                let wallTextureXFraction = 0;
-                let hitMapX = 0, hitMapY = 0;
-                let wallTypeHit = TILES.WALL;
-                let doorData = null;
-
-                while (!hitWall && distToWall < MAX_RAY_DEPTH) {
-                    distToWall += 0.02;
-                    let currentRayX = player.x + 0.5 + rayCos * distToWall;
-                    let currentRayY = player.y + 0.5 + raySin * distToWall;
-                    hitMapX = Math.floor(currentRayX);
-                    hitMapY = Math.floor(currentRayY);
-
-                    if (hitMapX < 0 || hitMapX >= TEST_MAP_WIDTH || hitMapY < 0 || hitMapY >= TEST_MAP_HEIGHT) {
-                        hitWall = true; distToWall = MAX_RAY_DEPTH;
-                    } else {
-                        let cellData = testMap3D[hitMapY][hitMapX];
-                        let cellType = typeof cellData === 'object' ? cellData.type : cellData;
-
-                        if (cellType === TILES.WALL || (cellType === TILES.DOOR_WOOD && cellData.isOpen === false)) {
-                            hitWall = true;
-                            wallTypeHit = cellType;
-                            if(cellType === TILES.DOOR_WOOD) doorData = cellData;
-
-                            let wallHitX = currentRayX;
-                            let wallHitY = currentRayY;
-                            let dx = wallHitX - hitMapX;
-                            let dy = wallHitY - hitMapY;
-                            const epsilon = 0.01;
-                            if (Math.abs(dx) < epsilon || Math.abs(dx - 1) < epsilon) {
-                                wallTextureXFraction = dy;
-                                if(rayCos > 0 && dx < epsilon) wallTextureXFraction = 1 - wallTextureXFraction;
-                            } else {
-                                wallTextureXFraction = dx;
-                                if(raySin < 0 && Math.abs(dy-1) < epsilon) {} else if (raySin > 0 && dy < epsilon) wallTextureXFraction = 1 - wallTextureXFraction;
-                            }
-                        }
-                    }
-                }
-                zBuffer[i] = distToWall;
-
-                const correctedDist = distToWall * Math.cos(rayAngle - player.angle);
-                const wallHeight = Math.min(screenHeight * 2, Math.max(1, Math.floor((screenHeight / correctedDist))));
-                const wallTop = (screenHeight / 2) - (wallHeight / 2);
-                const wallSliceX = (i * screenWidth) / RAY_COUNT;
-                const wallSliceWidth = Math.ceil(screenWidth / RAY_COUNT);
-
-                if (hitWall && correctedDist < MAX_RAY_DEPTH) {
-                    let wallSymbolId = 'wall-stone';
-                    if (wallTypeHit === TILES.DOOR_WOOD && doorData) {
-                        wallSymbolId = doorData.isOpen ? 'door-wood-open' : 'door-wood-closed';
-                    }
-                    const wallImage = AssetManager.getSymbolAsImage(wallSymbolId, { width: 100, height: 100 });
-
-                    if (wallImage.complete && wallImage.naturalWidth > 0) {
-                        const textureDrawX = Math.floor(wallTextureXFraction * wallImage.naturalWidth);
-                        const brightness = Math.max(0.15, Math.min(1, 1 - correctedDist / MAX_RAY_DEPTH * 0.7));
-                        ctx.globalAlpha = brightness;
-                        try {
-                            ctx.drawImage(wallImage, textureDrawX, 0, 1, wallImage.naturalHeight, wallSliceX, wallTop, wallSliceWidth, wallHeight);
-                        } catch (e) { /* ignore */ }
-                        ctx.globalAlpha = 1.0;
-                    } else {
-                        const shade = Math.max(30, 150 - correctedDist * 8);
-                        ctx.fillStyle = `rgb(${shade},${shade*0.9},${shade*0.8})`;
-                        ctx.fillRect(wallSliceX, wallTop, wallSliceWidth, wallHeight);
-                        if (!wallImage.dataset.loadHandlersAttached) {
-                             wallImage.onload = () => { 
-                                wallImage.dataset.loadHandlersAttached = 'true';
-                                if(gameContainerEl.style.display === 'flex' && currentTurn !== 'uninitialized') requestAnimationFrame(draw); 
-                            };
-                             wallImage.onerror = () => { 
-                                console.error(`Wall image ${wallSymbolId} failed to load.`); 
-                                wallImage.dataset.loadHandlersAttached = 'true';
-                            };
-                            wallImage.dataset.loadHandlersAttached = 'true';
-                        }
-                    }
-                }
-            }
-
-            enemies.forEach(enemy => {
-                if (!exploredMap[enemy.y] || !exploredMap[enemy.y][enemy.x]) return;
-                const dx = enemy.x + 0.5 - (player.x + 0.5);
-                const dy = enemy.y + 0.5 - (player.y + 0.5);
-                const distToSprite = Math.sqrt(dx * dx + dy * dy);
-                if (distToSprite < 0.5 || distToSprite > MAX_RAY_DEPTH -1) return;
-
-                let spriteAngleRel = Math.atan2(dy, dx) - player.angle;
-                while (spriteAngleRel < -Math.PI) spriteAngleRel += 2 * Math.PI;
-                while (spriteAngleRel > Math.PI) spriteAngleRel -= 2 * Math.PI;
-
-                if (Math.abs(spriteAngleRel) < FOV * 0.6) {
-                    spritesToRender.push({ type: 'enemy', entity: enemy, dist: distToSprite, angle: spriteAngleRel });
-                }
-            });
-            itemsOnMap.forEach(item => {
-                if (!exploredMap[item.y] || !exploredMap[item.y][item.x]) return;
-                if (player.x === item.x && player.y === item.y) return; 
-
-                const dx = item.x + 0.5 - (player.x + 0.5);
-                const dy = item.y + 0.5 - (player.y + 0.5);
-                const distToSprite = Math.sqrt(dx*dx + dy*dy);
-                if(distToSprite < 0.5 || distToSprite > MAX_RAY_DEPTH -1) return;
-                
-                let spriteAngleRel = Math.atan2(dy, dx) - player.angle;
-                while (spriteAngleRel < -Math.PI) spriteAngleRel += 2 * Math.PI;
-                while (spriteAngleRel > Math.PI) spriteAngleRel -= 2 * Math.PI;
-
-                if(Math.abs(spriteAngleRel) < FOV * 0.6) {
-                    spritesToRender.push({ type: 'item', entity: item, dist: distToSprite, angle: spriteAngleRel });
-                }
-            });
-
-            spritesToRender.sort((a, b) => b.dist - a.dist); 
-
-            spritesToRender.forEach(sprite => {
-                const spriteScreenX = Math.tan(sprite.angle) * (screenWidth / 2) + (screenWidth / 2);
-                const spriteHeight = Math.min(screenHeight * 1.5, Math.max(10, Math.floor(screenHeight / (sprite.dist * 1.5) ))); 
-                const spriteWidth = spriteHeight;
-                const spriteTop = (screenHeight / 2) - (spriteHeight / 2) + (spriteHeight * 0.25); 
-                const screenXColumn = Math.floor(spriteScreenX / (screenWidth / RAY_COUNT));
-
-                if (screenXColumn >=0 && screenXColumn < RAY_COUNT && sprite.dist < zBuffer[screenXColumn]) {
-                    let symbolIdToDraw = sprite.entity.svgIcon || (sprite.type === 'enemy' ? 'enemy-goblin' : 'icon-potion');
-                    const spriteImage = AssetManager.getSymbolAsImage(symbolIdToDraw, {width: 64, height: 64});
-                    
-                    if (spriteImage.complete && spriteImage.naturalWidth > 0) {
-                         const brightness = Math.max(0.2, Math.min(1, 1 - sprite.dist / MAX_RAY_DEPTH * 0.8));
-                         ctx.globalAlpha = brightness;
-                         ctx.drawImage(spriteImage, spriteScreenX - spriteWidth / 2, spriteTop, spriteWidth, spriteHeight);
-                         ctx.globalAlpha = 1.0;
-                    } else {
-                        // Draw placeholder for sprite
-                        ctx.fillStyle = 'purple';
-                        ctx.fillRect(spriteScreenX - spriteWidth / 2, spriteTop, spriteWidth, spriteHeight);
-                        if (!spriteImage.dataset.loadHandlersAttached) {
-                            spriteImage.onload = () => { 
-                                spriteImage.dataset.loadHandlersAttached = 'true';
-                                if(gameContainerEl.style.display === 'flex' && currentTurn !== 'uninitialized') requestAnimationFrame(draw); 
-                            };
-                            spriteImage.onerror = () => { 
-                                console.error(`Sprite image ${symbolIdToDraw} failed to load.`); 
-                                spriteImage.dataset.loadHandlersAttached = 'true';
-                            };
-                            spriteImage.dataset.loadHandlersAttached = 'true';
-                        }
-                    }
-                }
-            });
-
-            updateUI(); 
-            drawAutomap(automapCanvas, automapCtx);
-        }
-
-
-        function drawAutomap(targetCanvas, targetCtx) {
-            if (!testMap3D || testMap3D.length === 0 || !testMap3D[0] || typeof TEST_MAP_WIDTH === 'undefined' || typeof TEST_MAP_HEIGHT === 'undefined') {
-                return;
-            }
-            targetCanvas.width=TEST_MAP_WIDTH*AUTOMAP_TILE_SIZE; targetCanvas.height=TEST_MAP_HEIGHT*AUTOMAP_TILE_SIZE;
-            targetCtx.fillStyle='#0a0603'; targetCtx.fillRect(0,0,targetCanvas.width,targetCanvas.height);
-            for(let y=0;y<TEST_MAP_HEIGHT;y++){
-                if (!testMap3D[y]) continue;
-                for(let x=0;x<TEST_MAP_WIDTH;x++){
-                    if(!exploredMap[y] || exploredMap[y][x] === undefined) continue;
-
-                    let cellData = testMap3D[y][x];
-                    let cellType = typeof cellData === 'object' ? cellData.type : cellData;
-
-                    if(!exploredMap[y][x] && cellType !== TILES.WALL) continue;
-                    let color = '#605040'; 
-                    if (cellType === TILES.WALL) color = '#302010';
-                    else if (cellType === TILES.STAIRS_DOWN) color = 'var(--color-gold-accent)';
-                    else if (cellType === TILES.CHEST) color = '#8080ff';
-                    else if (cellType === TILES.DOOR_WOOD) color = '#b8860b';
-
-                    if(!exploredMap[y][x] && cellType === TILES.WALL) color = '#181008';
-                    targetCtx.fillStyle = color;
-                    targetCtx.fillRect(x*AUTOMAP_TILE_SIZE,y*AUTOMAP_TILE_SIZE,AUTOMAP_TILE_SIZE-1,AUTOMAP_TILE_SIZE-1);
-            }}
-            targetCtx.fillStyle='#33dd33'; 
-            targetCtx.fillRect(Math.floor(player.x)*AUTOMAP_TILE_SIZE, Math.floor(player.y)*AUTOMAP_TILE_SIZE, AUTOMAP_TILE_SIZE, AUTOMAP_TILE_SIZE);
-            targetCtx.strokeStyle='var(--color-parchment)';
-            targetCtx.strokeRect(Math.floor(player.x)*AUTOMAP_TILE_SIZE, Math.floor(player.y)*AUTOMAP_TILE_SIZE, AUTOMAP_TILE_SIZE, AUTOMAP_TILE_SIZE);
-        }
-
-        function updateUI() {
-            partyDisplayEl.innerHTML = '';
-            party.forEach((member, index) => {
-                const memberDiv = document.createElement('div');
-                memberDiv.classList.add('party-member');
-                if (index === activeCharacterIndex && member.isAlive) memberDiv.classList.add('active');
-                if (!member.isAlive) memberDiv.classList.add('fallen');
-
-                const portraitHTML = `<div class="party-member-portrait" id="portrait-cont-${index}">${AssetManager.getUseElementString(member.portraitSVG || 'portrait-placeholder', '', '60px', '60px')}</div>`;
-
-                let weaponIconHTML = "";
-                if (member.equippedWeapon) {
-                    weaponIconHTML = `<span class="weapon-icon">${AssetManager.getUseElementString(member.equippedWeapon.svgIcon || 'icon-sword')}</span>`;
-                }
-
-                let memberActionsHTML = `<div class="party-member-actions">`;
-                memberActionsHTML += `<span class="action-icon melee-action-icon ${member.hasActedThisTurn || !member.isAlive ? 'disabled' : ''}" title="Melee Attack" onclick="triggerMemberAction(${index}, 'melee')">⚔️</span>`;
-                if (member.equippedWeapon && member.equippedWeapon.ranged) {
-                     memberActionsHTML += `<span class="action-icon ranged-action-icon ${member.hasActedThisTurn || !member.isAlive ? 'disabled' : ''}" title="Ranged Attack" onclick="triggerMemberAction(${index}, 'ranged')">🏹</span>`;
-                }
-                if (member.spellcaster) {
-                     memberActionsHTML += `<span class="action-icon magic-icon ${member.hasActedThisTurn || !member.isAlive ? 'disabled' : ''}" title="Cast Spell" onclick="triggerMemberAction(${index}, 'magic')">🔮</span>`;
-                }
-                memberActionsHTML += `</div>`;
-
-
-                memberDiv.innerHTML = `
-                    ${portraitHTML}
-                    <div>
-                        <div class="party-member-name">${member.name} ${weaponIconHTML}</div>
-                        <div class="party-member-hp">HP: ${member.hp}/${member.maxHp}</div>
-                        <div class="stat-bar"><div class="stat-bar-fill" style="width:${(member.hp/member.maxHp)*100}%;"></div></div>
-                        <div class="party-member-mp">MP: ${member.mp}/${member.maxMp}</div>
-                        <div class="stat-bar"><div class="stat-bar-fill stat-bar-fill-mp" style="width:${(member.mp/member.maxMp)*100}%;"></div></div>
-                        <div class="text-xs mt-1">Lvl ${member.level} ${member.type}</div>
-                        ${memberActionsHTML}
-                    </div>
-                `;
-                memberDiv.onclick = (event) => {
-                    if (event.target.closest('.action-icon')) return;
-                    if (member.isAlive) { activeCharacterIndex = index; addMessage(`${member.name} selected.`, 'var(--color-gold-accent)'); updateUI(); }
-                    else { addMessage(`${member.name} is incapacitated.`, "#ff6060"); }
-                };
-                partyDisplayEl.appendChild(memberDiv);
-            });
-            mapDungeonLevelIndicatorEl.textContent = dungeonLevel;
-            if (inventoryPanelEl.style.display === 'block') updateInventoryDisplay();
-            if (mapPanelEl.style.display === 'block') { 
-                mapDungeonLevelEl.textContent = dungeonLevel; 
-                drawAutomap(automapCanvasModal, automapModalCtx); 
-            }
-        }
-        function updateInventoryDisplay() { 
-            const character = party[activeCharacterIndex]; 
-            inventoryCharacterNameEl.textContent = character.name; 
-            inventoryGridEl.innerHTML = ''; 
-            itemDetailContentEl.innerHTML = '<p class="no-item">Select an item to see details.</p>'; 
-            for(let i=0;i<INVENTORY_SLOTS;i++){
-                const slot=document.createElement('div');
-                slot.classList.add('inventory-slot');
-                const item=character.inventory[i]; 
-                if(item){
-                    slot.innerHTML = AssetManager.getUseElementString(item.svgIcon || 'icon-potion-generic', '', '30px', '30px');
-                    if(item===character.equippedWeapon||item===character.equippedArmor)slot.classList.add('equipped'); 
-                    
-                    const tooltip=document.createElement('span');
-                    tooltip.classList.add('item-name-tooltip');
-                    tooltip.textContent=item.name;
-                    slot.appendChild(tooltip); 
-                    
-                    slot.onmouseenter=()=>displayItemDetails(item); 
-                    slot.onmouseleave=()=>{if(selectedInventoryItemIndex === -1)clearItemDetails();else if(character.inventory[selectedInventoryItemIndex]) displayItemDetails(character.inventory[selectedInventoryItemIndex]); else clearItemDetails();}; 
-                    slot.onclick=()=>{selectedInventoryItemIndex=i;displayItemDetails(item);useItem(i);}; 
-                }
-                inventoryGridEl.appendChild(slot); 
-            } 
-            equippedWeaponNameEl.textContent=character.equippedWeapon?character.equippedWeapon.name:'None'; 
-            equippedArmorNameEl.textContent=character.equippedArmor?character.equippedArmor.name:'None'; 
-            if(selectedInventoryItemIndex!==-1&&character.inventory[selectedInventoryItemIndex])displayItemDetails(character.inventory[selectedInventoryItemIndex]); 
-            else if (selectedInventoryItemIndex !== -1) clearItemDetails(); 
-        }
-        function displayItemDetails(item) { if(!item){clearItemDetails();return;} let detailsHTML=`<h3 class="title-font">${item.name} (${item.type})</h3>`; detailsHTML+=`<p class="text-sm">${item.description||'No description.'}</p><hr class="my-1">`; if(item.attack)detailsHTML+=`<p>Attack: <span style="color:#66cc66;">${item.attack}</span> ${item.ranged?'(Ranged)':''}</p>`; if(item.defense)detailsHTML+=`<p>Defense: <span style="color:#6688cc;">${item.defense}</span></p>`; if(item.hp)detailsHTML+=`<p>Heals HP: <span style="color:#cc6666;">${item.hp}</span></p>`; if(item.mp)detailsHTML+=`<p>Restores MP: <span style="color:#66aacc;">${item.mp}</span></p>`; detailsHTML+=`<p>Value: <span style="color:var(--color-gold-accent);">${item.value}g</span></p>`; itemDetailContentEl.innerHTML=detailsHTML; }
-        function clearItemDetails() { itemDetailContentEl.innerHTML='<p class="no-item">Select an item to see details.</p>'; selectedInventoryItemIndex = -1; }
-        function addMessage(message, color = 'var(--color-text-light)') {
-            const messageDiv = document.createElement('div');
-            messageDiv.textContent = message;
-            messageDiv.style.color = color;
-            logbookContentEl.appendChild(messageDiv.cloneNode(true)); 
-
-            while (logbookContentEl.children.length > MAX_LOG_MESSAGES) {
-                logbookContentEl.removeChild(logbookContentEl.firstChild);
-            }
-            logbookContentEl.scrollTop = logbookContentEl.scrollHeight;
-        }
-
-        // --- Game Logic ---
-        function movePlayer3D(forward, turn) {
-            if (currentTurn !== 'player' || !party[activeCharacterIndex] || party[activeCharacterIndex].hasActedThisTurn) return;
-
-            if (turn !== 0) {
-                player.angle += turn * (Math.PI / 2);
-                if (player.angle < 0) player.angle += 2 * Math.PI;
-                if (player.angle >= 2 * Math.PI) player.angle -= 2 * Math.PI;
-                player.dx = Math.round(Math.cos(player.angle));
-                player.dy = Math.round(Math.sin(player.angle));
-                if(gameContainerEl.style.display === 'flex' && currentTurn !== 'uninitialized') requestAnimationFrame(draw); 
-                return;
-            }
-            if (forward !== 0) {
-                const newX = player.x + player.dx * forward;
-                const newY = player.y + player.dy * forward;
-
-                if (newX >= 0 && newX < TEST_MAP_WIDTH && newY >= 0 && newY < TEST_MAP_HEIGHT) {
-                    const targetCellData = testMap3D[newY][newX];
-                    const cellType = typeof targetCellData === 'object' ? targetCellData.type : targetCellData;
-                    const isDoorOpen = typeof targetCellData === 'object' && targetCellData.isOpen;
-
-                    if (cellType === TILES.FLOOR || (cellType === TILES.DOOR_WOOD && isDoorOpen) || cellType === TILES.STAIRS_DOWN || cellType === TILES.CHEST) { 
-                        player.x = newX; player.y = newY;
-                        revealTile(player.x, player.y);
-                        party[activeCharacterIndex].hasActedThisTurn = true; 
-                        
-                        const itemIndexOnTile = itemsOnMap.findIndex(item => item.x === player.x && item.y === player.y);
-                        if(itemIndexOnTile !== -1){
-                            pickupItem(itemIndexOnTile);
-                        }
-                        endPlayerTurn();
-                    } else {
-                        addMessage("Blocked!", "orange");
-                    }
-                } else { addMessage("Blocked by the edge of the world!", "orange"); }
-            }
-            if(gameContainerEl.style.display === 'flex' && currentTurn !== 'uninitialized') requestAnimationFrame(draw);
-        }
-
-        function playerAttackEnemy(char,enemy,isRanged){ if (!char || !char.isAlive) { addMessage(`${char.name} cannot attack!`, "red"); return; } if (!enemy || enemy.hp <= 0) { addMessage("Invalid target.", "orange"); return; } addMessage(`${char.name} ${isRanged ? 'fires at' : 'attacks'} ${enemy.name}!`, "#c0c0ff"); let attackPower = char.attack; let hitChance = 0.92; if (isRanged) { if (!char.equippedWeapon || !char.equippedWeapon.ranged) { addMessage(`${char.name} needs a ranged weapon!`, "orange"); char.hasActedThisTurn = true; endPlayerTurn(); return; } hitChance = 0.82; } if (Math.random() > hitChance) { addMessage(`${char.name}'s attack MISSES ${enemy.name}!`, "orange"); } else { let dmg = Math.max(1, attackPower - enemy.defense); dmg = Math.floor(dmg * (Math.random() * 0.5 + 0.75)); enemy.hp -= dmg; addMessage(`${enemy.name} takes ${dmg} damage. (${enemy.hp}/${enemy.maxHp} HP)`, "#ff8080"); if (enemy.hp <= 0) { addMessage(`${enemy.name} is vanquished!`, "#80ff80"); const xpg = enemy.xpValue; const gg = enemy.goldValue; party.forEach(m => { if(m.isAlive) m.xp += Math.floor(xpg / party.filter(p=>p.isAlive).length); }); party[0].gold += gg; addMessage(`Party gains ${xpg} XP & ${gg} gold.`, "#80ff80"); if (enemy.loot) { addMessage(`${enemy.name} dropped: ${enemy.loot.name}!`, "#80ffff"); itemsOnMap.push({...enemy.loot, x: enemy.x, y: enemy.y}); } enemies = enemies.filter(e => e !== enemy); party.forEach(m => { if(m.isAlive) checkLevelUp(m); }); } } char.hasActedThisTurn = true; endPlayerTurn(); }
-        function enemyTurn(){ enemies.forEach(enemy => { if (enemy.hp <= 0) return; let alivePartyMembers = party.filter(p => p.isAlive); if (alivePartyMembers.length === 0) { currentTurn = 'gameOver'; return; } const playerGridX = Math.floor(player.x); const playerGridY = Math.floor(player.y); const distToPlayerX = Math.abs(playerGridX - enemy.x); const distToPlayerY = Math.abs(playerGridY - enemy.y); if (distToPlayerX <= 1 && distToPlayerY <= 1 && (distToPlayerX + distToPlayerY > 0)) { const targetCharacter = alivePartyMembers[Math.floor(Math.random() * alivePartyMembers.length)]; addMessage(`${enemy.name} attacks ${targetCharacter.name}!`, "orange"); let damage = Math.max(1, enemy.attack - targetCharacter.defense); damage = Math.floor(damage * (Math.random() * 0.5 + 0.75)); targetCharacter.hp -= damage; addMessage(`${targetCharacter.name} suffers ${damage} damage.`, "red"); if (targetCharacter.hp <= 0) { targetCharacter.hp = 0; targetCharacter.isAlive = false; addMessage(`${targetCharacter.name} has fallen in battle!`, "darkred"); if (party.every(p => !p.isAlive)) { addMessage("Your entire party has perished! Game Over. (Press 'R' to Restart)","red"); currentTurn = 'gameOver'; } } } else { let dx = 0, dy = 0; if (playerGridX < enemy.x) dx = -1; else if (playerGridX > enemy.x) dx = 1; if (playerGridY < enemy.y) dy = -1; else if (playerGridY > enemy.y) dy = 1; if (dx !== 0 && testMap3D[enemy.y]?.[enemy.x + dx] === 0 && !enemies.find(e=>e.x === enemy.x+dx && e.y === enemy.y)) { enemy.x += dx; } else if (dy !== 0 && testMap3D[enemy.y + dy]?.[enemy.x] === 0 && !enemies.find(e=>e.x === enemy.x && e.y === enemy.y+dy)) { enemy.y += dy; } } }); if (currentTurn !== 'gameOver') startPlayerTurn(); if(gameContainerEl.style.display === 'flex' && currentTurn !== 'uninitialized') requestAnimationFrame(draw); }
-        
-        function pickupItem(itemIndexOnMap){ 
-            const item = itemsOnMap[itemIndexOnMap];
-            const activeChar = party[activeCharacterIndex]; 
-            if (activeChar.inventory.length < INVENTORY_SLOTS) {
-                activeChar.inventory.push(item);
-                itemsOnMap.splice(itemIndexOnMap, 1);
-                addMessage(`${activeChar.name} picked up ${item.name}.`, 'var(--color-gold-accent)');
-                if(inventoryPanelEl.style.display === 'block') updateInventoryDisplay();
-            } else {
-                addMessage(`${activeChar.name}'s inventory is full. Cannot pick up ${item.name}.`, 'orange');
-            }
-        }
-        function useItem(invIdx){ 
-            const char = party[activeCharacterIndex];
-            const item = char.inventory[invIdx];
-            if (!item || char.hasActedThisTurn) return;
-
-            if (item.type === ITEM_TYPES.POTION && item.effect) {
-                item.effect(char);
-                char.inventory.splice(invIdx, 1); 
-                addMessage(`${char.name} used ${item.name}.`);
-            } else if (item.type === ITEM_TYPES.WEAPON) {
-                if (char.equippedWeapon === item) { 
-                    char.inventory.push(item); 
-                    char.equippedWeapon = null;
-                    addMessage(`${char.name} unequipped ${item.name}.`);
-                } else { 
-                    if (char.equippedWeapon) char.inventory.push(char.equippedWeapon); 
-                    char.equippedWeapon = item;
-                    char.inventory.splice(invIdx, 1);
-                    addMessage(`${char.name} equipped ${item.name}.`);
-                }
-            } else if (item.type === ITEM_TYPES.ARMOR) {
-                 if (char.equippedArmor === item) { 
-                    char.inventory.push(item); 
-                    char.equippedArmor = null;
-                    addMessage(`${char.name} unequipped ${item.name}.`);
-                } else { 
-                    if (char.equippedArmor) char.inventory.push(char.equippedArmor); 
-                    char.equippedArmor = item;
-                    char.inventory.splice(invIdx, 1);
-                    addMessage(`${char.name} equipped ${item.name}.`);
-                }
-            } else {
-                 addMessage(`Cannot use ${item.name} this way.`, "grey");
-                 return; 
-            }
-            
-            updatePartyStats();
-            updateInventoryDisplay(); 
-            updateUI(); 
-            selectedInventoryItemIndex = -1; 
-            char.hasActedThisTurn = true; 
-            endPlayerTurn();
-        }
-
-        function openChest(x,y){ addMessage("Chests not interactive in 3D view yet.", "grey"); }
-        
-        function performGenericAction(){ 
-            const char = party[activeCharacterIndex];
-            if (!char || !char.isAlive || char.hasActedThisTurn) {
-                addMessage(char.hasActedThisTurn ? `${char.name} has already acted.` : "Cannot act now.", "orange");
-                return;
-            }
-            const lookX = Math.floor(player.x + player.dx); 
-            const lookY = Math.floor(player.y + player.dy); 
-
-            const playerOnX = Math.floor(player.x);
-            const playerOnY = Math.floor(player.y);
-            let cellPlayerIsOn = testMap3D[playerOnY][playerOnX];
-            if ((typeof cellPlayerIsOn === 'object' ? cellPlayerIsOn.type : cellPlayerIsOn) === TILES.STAIRS_DOWN) {
-                newLevel();
-                return; 
-            }
-
-
-            if (lookX >= 0 && lookX < TEST_MAP_WIDTH && lookY >= 0 && lookY < TEST_MAP_HEIGHT) {
-                let targetCell = testMap3D[lookY][lookX];
-                if (typeof targetCell === 'object') {
-                    if (targetCell.type === TILES.DOOR_WOOD) {
-                        targetCell.isOpen = !targetCell.isOpen;
-                        addMessage(targetCell.isOpen ? "Door opened." : "Door closed.");
-                        char.hasActedThisTurn = true;
-                        endPlayerTurn();
-                        if(gameContainerEl.style.display === 'flex' && currentTurn !== 'uninitialized') requestAnimationFrame(draw);
-                        return;
-                    } else if (targetCell.type === TILES.CHEST) {
-                        addMessage("You examine the chest... (Interaction TBD)");
-                        char.hasActedThisTurn = true;
-                        endPlayerTurn();
-                        if(gameContainerEl.style.display === 'flex' && currentTurn !== 'uninitialized') requestAnimationFrame(draw);
-                        return;
-                    }
-                } 
-                addMessage("You search the area... Nothing happens.", "grey");
-            } else {
-                addMessage("Facing out of bounds.", "grey");
-            }
-            char.hasActedThisTurn = true;
-            endPlayerTurn();
-        }
-        function newLevel(){ dungeonLevel++; addMessage(`Entering Level ${dungeonLevel}...`, 'var(--color-gold-accent)'); initExploredMap(); populateEnemies(); populateItems(); player.x=1; player.y=1; player.angle=0; player.dx=1; player.dy=0; startPlayerTurn(); if(gameContainerEl.style.display === 'flex' && currentTurn !== 'uninitialized') requestAnimationFrame(draw); }
-        function restartGame(){ addMessage("A new quest begins...","#ffd700"); dungeonLevel=1; localStorage.removeItem('chosenRPGParty'); localStorage.removeItem('rpgGameState'); partyConfigModalEl.style.display = 'flex'; gameContainerEl.style.display = 'none'; selectedPartyArchetypes = []; updateSelectedPartyDisplay(); startGameButton.disabled = true; currentTurn = 'uninitialized'; MusicPlayer.playTheme('MENU_THEME');}
-        function checkLevelUp(char){if(!char.isAlive)return;if(char.xp>=char.nextLevelXp){char.level++;char.xp-=char.nextLevelXp;char.nextLevelXp=Math.floor(char.nextLevelXp*1.6);char.maxHp+=Math.floor(22+char.maxHp*0.13+char.level*1.5);char.hp=char.maxHp;char.maxMp+=Math.floor(12+char.maxMp*0.09+char.level*1.2);char.mp=char.maxMp;char.baseAttack+=Math.floor(1+char.level*0.28);char.baseDefense+=Math.floor(1+char.level*0.18);updatePartyStats();addMessage(`${char.name} has attained Level ${char.level}!`,"#ffd700");}}
-        function updatePartyStats(){party.forEach(char=>{if(!char.isAlive)return;char.attack=char.baseAttack+(char.equippedWeapon?char.equippedWeapon.attack:0);char.defense=char.baseDefense+(char.equippedArmor?char.equippedArmor.defense:0);});}
-        function startPlayerTurn() {
-            currentTurn = 'player';
-            party.forEach(member => member.hasActedThisTurn = false);
-            updateUI(); 
-        }
-        function endPlayerTurn(){ 
-            if (currentTurn === 'gameOver') return; 
-            
-            const allLivingActed = party.filter(p => p.isAlive).every(p => p.hasActedThisTurn);
-            if (!allLivingActed) {
-                 updateUI(); 
-                 // The rAF(draw) from the action (e.g., movePlayer3D) will handle the visual update.
-                 return; 
-            }
-
-            currentTurn = 'enemy'; 
-            if (party.every(p => !p.isAlive)) { addMessage("Your entire party has perished! Game Over. (Press 'R' to Restart)", "red"); currentTurn = 'gameOver'; if(gameContainerEl.style.display === 'flex') requestAnimationFrame(draw); return; } 
-            
-            if (party.length > 0 && !party[activeCharacterIndex].isAlive) { 
-                const nextAlive = party.findIndex(p => p.isAlive); 
-                if (nextAlive !== -1) activeCharacterIndex = nextAlive; 
-            } 
-            
-            setTimeout(() => { if (currentTurn === 'enemy') enemyTurn(); }, 300); 
-        }
-
-
-        async function initializeApp() {
-            try {
-                await AssetManager.init(); 
-            } catch (error) {
-                console.error("CRITICAL ERROR: Could not load SVG assets. Game cannot start.", error);
-                document.body.innerHTML = "<div style='color:white; text-align:center; padding: 20px;'>Failed to load critical game assets. Please ensure 'assets.svg' is accessible and try again. Check console for details.</div>";
-                return; 
-            }
-
-
-            const savedPartyArchetypeIDsString = localStorage.getItem('chosenRPGParty');
-            let savedPartyArchetypeIDs = null;
-            if (savedPartyArchetypeIDsString) {
-                try { savedPartyArchetypeIDs = JSON.parse(savedPartyArchetypeIDsString); }
-                catch (e) { console.error("Error parsing saved party:", e); localStorage.removeItem('chosenRPGParty'); }
-            }
-
-            if (savedPartyArchetypeIDs && Array.isArray(savedPartyArchetypeIDs) && savedPartyArchetypeIDs.length === MAX_PARTY_SIZE) {
-                selectedPartyArchetypes = savedPartyArchetypeIDs.map(id => availableArchetypes.find(arch => arch.id === id)).filter(Boolean);
-                if (selectedPartyArchetypes.length === MAX_PARTY_SIZE) { 
-                    mainMenuModalEl.style.display = 'none'; 
-                    finalizePartyAndStartGame(); 
-                } else { 
-                    localStorage.removeItem('chosenRPGParty'); 
-                    mainMenuModalEl.style.display = 'flex'; 
-                }
-            } else { 
-                mainMenuModalEl.style.display = 'flex'; 
-            }
-            populateArchetypeSelection(); 
-            updateSelectedPartyDisplay();
-            
-            window.addEventListener('keydown', (e) => { 
-                const partyConfigOpen = partyConfigModalEl.style.display === 'flex' || partyConfigModalEl.style.display === 'block';
-                if (partyConfigOpen) { 
-                    if (e.key === 'Enter' && !startGameButton.disabled) finalizePartyAndStartGame(); 
-                    return; 
-                } 
-            });
-
-            newGameBtn.onclick = () => {
-                mainMenuModalEl.style.display = 'none';
-                partyConfigModalEl.style.display = 'flex';
-                settingsModalEl.style.display = 'none';
-                gameContainerEl.style.display = 'none';
-                MusicPlayer.playTheme('MENU_THEME');
-            };
-            resumeGameBtn.onclick = () => {
-                if (loadGameState()) {
-                    mainMenuModalEl.style.display = 'none';
-                    partyConfigModalEl.style.display = 'none';
-                    settingsModalEl.style.display = 'none';
-                    gameContainerEl.style.display = 'flex';
-                    MusicPlayer.playTheme('DUNGEON_THEME');
-                } else {
-                    addMessage("No valid saved game. Starting party selection.", "orange");
-                    mainMenuModalEl.style.display = 'none';
-                    partyConfigModalEl.style.display = 'flex';
-                    MusicPlayer.playTheme('MENU_THEME');
-                }
-            };
-            settingsBtn.onclick = () => {
-                mainMenuModalEl.style.display = 'none';
-                partyConfigModalEl.style.display = 'none';
-                settingsModalEl.style.display = 'flex';
-                gameContainerEl.style.display = 'none';
-                loadSettings();
-            };
-            backToMainMenuFromPartyConfigBtn.onclick = () => {
-                partyConfigModalEl.style.display = 'none';
-                mainMenuModalEl.style.display = 'flex';
-                MusicPlayer.playTheme('MENU_THEME');
-            };
-            closeSettingsBtn.onclick = () => {
-                settingsModalEl.style.display = 'none';
-                if (gameContainerEl.style.display === 'flex') {
-                    if (MusicPlayer.isMusicOn && !MusicPlayer.currentTheme) MusicPlayer.playTheme(MusicPlayer.currentTheme || 'DUNGEON_THEME');
-                } else if (partyConfigModalEl.style.display === 'flex' || partyConfigModalEl.style.display === 'block') {
-                } else {
-                    mainMenuModalEl.style.display = 'flex';
-                    MusicPlayer.playTheme('MENU_THEME');
-                }
-            };
-            musicToggleEl.onchange = saveSettings;
-            volumeSliderEl.oninput = () => { saveSettings(); MusicPlayer.setVolume(parseFloat(volumeSliderEl.value));};
-            
-            if(actionMenuBtn) actionMenuBtn.onclick = () => {
-                settingsModalEl.style.display = 'flex';
-                loadSettings();
-                MusicPlayer.stop(); 
-            };
-
-            if(resetPartyAndDataBtn) resetPartyAndDataBtn.onclick = () => {
-                if(confirm("Are you sure you want to reset ALL game data? This includes saved games and party configurations.")) {
-                    localStorage.removeItem('chosenRPGParty');
-                    localStorage.removeItem('rpgGameState');
-                    localStorage.removeItem('rpgGameSettings');
-                    addMessage("All game data has been reset.", "yellow");
-                    mainMenuModalEl.style.display = 'flex';
-                    settingsModalEl.style.display = 'none';
-                    gameContainerEl.style.display = 'none';
-                    partyConfigModalEl.style.display = 'none'; 
-                    selectedPartyArchetypes = []; 
-                    updateSelectedPartyDisplay(); 
-                    startGameButton.disabled = true; 
-                    currentTurn = 'uninitialized';
-                    MusicPlayer.playTheme('MENU_THEME');
-                }
-            };
-            if(actionLogbookBtn) actionLogbookBtn.onclick = toggleLogbook;
-            if(closeLogbookBtn) closeLogbookBtn.onclick = toggleLogbook;
-
-            document.documentElement.style.setProperty('--map-aspect-ratio-calc', `${TEST_MAP_WIDTH / TEST_MAP_HEIGHT}`);
-            resizeGameElements(); 
-        }
-        
-        const MusicPlayer = {
-            melodySynth: null, harmonySynth: null,
-            melodySequencer: null, harmonySequencer: null,
-            currentTheme: null, volumeNode: null, isMusicOn: true,
-            themes: {
-                MENU_THEME: {
-                    melody: [ { time: "0:0:0", note: "G4", duration: "4n" }, { time: "0:1:0", note: "C5", duration: "4n" }, { time: "0:2:0", note: "E5", duration: "4n" }, { time: "0:3:0", note: "G5", duration: "2n" }, { time: "1:0:0", note: "F5", duration: "4n" }, { time: "1:1:0", note: "D5", duration: "4n" }, { time: "1:2:0", note: "B4", duration: "4n" }, { time: "1:3:0", note: "C5", duration: "2n" }, { time: "2:0:0", note: "E5", duration: "4n" }, { time: "2:1:0", note: "G5", duration: "4n" }, { time: "2:2:0", note: "C6", duration: "4n" }, { time: "2:3:0", note: "B5", duration: "2n" }, { time: "3:0:0", note: "A5", duration: "4n" }, { time: "3:1:0", note: "F5", duration: "4n" }, { time: "3:2:0", note: "D5", duration: "4n" }, { time: "3:3:0", note: "E5", duration: "1m" } ],
-                    harmony: [ { time: "0:0:0", note: "C3", duration: "1m"}, { time: "0:0:0", note: "E3", duration: "1m"}, { time: "0:0:0", note: "G3", duration: "1m"}, { time: "1:0:0", note: "F3", duration: "1m"}, { time: "1:0:0", note: "A3", duration: "1m"}, { time: "1:0:0", note: "C4", duration: "1m"}, { time: "2:0:0", note: "G3", duration: "1m"}, { time: "2:0:0", note: "B3", duration: "1m"}, { time: "2:0:0", note: "D4", duration: "1m"}, { time: "3:0:0", note: "C3", duration: "1m"}, { time: "3:0:0", note: "E3", duration: "1m"}, { time: "3:0:0", note: "G3", duration: "1m"} ],
-                    tempo: "100bpm", loopLength: "4m"
-                },
-                DUNGEON_THEME: {
-                     melody: [ { time: "0:0:0", note: "C2", duration: "1n." }, { time: "0:3:0", note: "D#2", duration: "8n" }, { time: "1:0:0", note: "D2", duration: "2n" }, { time: "1:2:0", note: "F2", duration: "2n" }, { time: "2:0:0", note: "C2", duration: "1n." }, { time: "2:3:0", note: "A#1", duration: "8n" }, { time: "3:0:0", note: "G#1", duration: "1m"}, { time: "4:0:0", note: "C2", duration: "2n"}, { time: "4:2:0", note: "D#2", duration: "2n"}, { time: "5:0:0", note: "F2", duration: "1n"}, { time: "6:0:0", note: "D2", duration: "2n." }, { time: "6:3:0", note: "C2", duration: "8n" }, { time: "7:0:0", note: "A#1", duration: "1m"} ],
-                    harmony: [ { time: "0:0:0", note: "C1", duration: "2m"}, { time: "2:0:0", note: "F1", duration: "2m"}, { time: "4:0:0", note: "G1", duration: "2m"}, { time: "6:0:0", note: "D1", duration: "2m"} ],
-                    tempo: "50bpm", loopLength: "8m"
-                },
-                 DUNGEON_THEME_ALT: {
-                     melody: [ { time: "0:0:0", note: "E2", duration: "1n" }, { time: "1:0:0", note: "G2", duration: "2n" }, { time: "1:2:0", note: "F#2", duration: "2n" }, { time: "2:0:0", note: "E2", duration: "1n" }, { time: "3:0:0", note: "B1", duration: "1m"}, { time: "4:0:0", note: "D2", duration: "1n" }, { time: "5:0:0", note: "C#2", duration: "2n" }, { time: "5:2:0", note: "B1", duration: "2n" }, { time: "6:0:0", note: "A1", duration: "1m"} ],
-                    harmony: [ { time: "0:0:0", note: "E1", duration: "2m"}, { time: "2:0:0", note: "A1", duration: "2m"}, { time: "4:0:0", note: "D1", duration: "2m"}, { time: "6:0:0", note: "G1", duration: "2m"} ],
-                    tempo: "45bpm", loopLength: "8m"
-                },
-            },
-            init: function() {
-                this.melodySynth = new Tone.PolySynth(Tone.Synth, { oscillator: { type: "triangle8" }, envelope: { attack: 0.05, decay: 0.2, sustain: 0.4, release: 0.8 }, volume: -10 }).toDestination();
-                this.harmonySynth = new Tone.PolySynth(Tone.FMSynth, { harmonicity: 1.5, modulationIndex: 3, envelope: { attack: 0.1, decay: 0.5, sustain: 0.2, release: 1.2 }, volume: -18 }).toDestination();
-                this.volumeNode = new Tone.Volume(-10).toDestination();
-                this.melodySynth.connect(this.volumeNode); this.harmonySynth.connect(this.volumeNode);
-                loadSettings();
-            },
-            playTheme: async function(themeType = 'MENU_THEME') {
-                if (!this.isMusicOn || !this.melodySynth || !this.harmonySynth) return;
-                if (Tone.context.state !== 'running') {
-                    try { await Tone.start(); } catch (e) { console.warn("Tone.start() failed.", e); }
-                }
-                if (this.melodySequencer) { this.melodySequencer.stop().clear().dispose(); this.melodySequencer = null; }
-                if (this.harmonySequencer) { this.harmonySequencer.stop().clear().dispose(); this.harmonySequencer = null; }
-                
-                const theme = this.themes[themeType] || this.themes.MENU_THEME;
-                this.currentTheme = themeType;
-                this.melodySequencer = new Tone.Part((time, value) => { this.melodySynth.triggerAttackRelease(value.note, value.duration, time); }, theme.melody).start(0);
-                this.melodySequencer.loop = true; this.melodySequencer.loopEnd = theme.loopLength;
-                if (theme.harmony) { this.harmonySequencer = new Tone.Part((time, value) => { this.harmonySynth.triggerAttackRelease(value.note, value.duration, time); }, theme.harmony).start(0); this.harmonySequencer.loop = true; this.harmonySequencer.loopEnd = theme.loopLength; }
-                Tone.Transport.bpm.value = parseInt(theme.tempo);
-                if (Tone.Transport.state !== "started") { Tone.Transport.start(); }
-            },
-            stop: function() { if (this.melodySequencer) {this.melodySequencer.stop().clear().dispose(); this.melodySequencer = null;} if (this.harmonySequencer) {this.harmonySequencer.stop().clear().dispose(); this.harmonySequencer = null;} this.currentTheme = null; if (Tone.Transport.state === "started") { Tone.Transport.pause(); } },
-            setVolume: function(value) { if (this.volumeNode) { const dB = Tone.gainToDb(parseFloat(value)); this.volumeNode.volume.linearRampToValueAtTime(dB, Tone.now() + 0.1); } },
-            toggleMusic: function(isOn) { this.isMusicOn = isOn; if (this.isMusicOn && this.currentTheme) { this.playTheme(this.currentTheme); } else if (!this.isMusicOn) { this.stop(); } }
-        };
-        
-        function initGame() {
-            resizeGameElements(); initExploredMap();
-            populateEnemies(); populateItems();
-            if (party.length > 0) updatePartyStats();
-            else { console.error("Party not initialized!"); return; }
-            startPlayerTurn(); 
-            if(gameContainerEl.style.display === 'flex' && currentTurn !== 'uninitialized') requestAnimationFrame(draw);
-            addMessage("The Quest for the Sundered Amulet begins!", 'var(--color-gold-accent)');
-            addMessage("Use Arrows or W/A/S/D to Move/Turn.", 'var(--color-parchment-dark)');
-            addMessage("Tap screen edges/center on touch devices.", 'var(--color-parchment-dark)');
-            
-            window.removeEventListener('keydown', gameKeydownHandler); 
-            window.addEventListener('keydown', gameKeydownHandler);
-            canvas.removeEventListener('touchstart', handleCanvasTouch); 
-            canvas.addEventListener('touchstart', handleCanvasTouch);
-            
-            const dungeonThemes = ['DUNGEON_THEME', 'DUNGEON_THEME_ALT'];
-            MusicPlayer.playTheme(dungeonThemes[Math.floor(Math.random() * dungeonThemes.length)]);
-        }
-
-        function handleCanvasTouch(event) {
-            event.preventDefault();
-            if (currentTurn !== 'player' || !party[activeCharacterIndex] || !party[activeCharacterIndex].isAlive || party[activeCharacterIndex].hasActedThisTurn) return;
-            const rect = canvas.getBoundingClientRect();
-            const touchX = event.touches[0].clientX - rect.left;
-            const canvasWidth = canvas.width; 
-            const leftZoneEnd = canvasWidth * 0.25;
-            const rightZoneStart = canvasWidth * 0.75;
-            if (touchX < leftZoneEnd) { movePlayer3D(0, -1); } 
-            else if (touchX > rightZoneStart) { movePlayer3D(0, 1); } 
-            else { movePlayer3D(1, 0); } 
-        }
-
-
-        function gameKeydownHandler(e) {
-            if(currentTurn==='gameOver'){if(e.key.toLowerCase()==='r')restartGame();return;}
-            
-            const modalOpen = inventoryPanelEl.style.display==='block' || 
-                              mapPanelEl.style.display==='block' || 
-                              settingsModalEl.style.display === 'flex' || 
-                              logbookModalEl.style.display === 'flex';
-
-            if(modalOpen){
-                if(e.key==='Escape'){
-                    inventoryPanelEl.style.display='none';
-                    mapPanelEl.style.display='none';
-                    settingsModalEl.style.display = 'none';
-                    logbookModalEl.style.display = 'none';
-                    
-                    if (gameContainerEl.style.display === 'flex' && MusicPlayer.isMusicOn && !MusicPlayer.currentTheme) {
-                         const dungeonThemes = ['DUNGEON_THEME', 'DUNGEON_THEME_ALT'];
-                         MusicPlayer.playTheme(MusicPlayer.currentTheme || dungeonThemes[Math.floor(Math.random() * dungeonThemes.length)]);
-                    } else if (gameContainerEl.style.display !== 'flex' && (partyConfigModalEl.style.display !== 'flex' && partyConfigModalEl.style.display !== 'block') ) {
-                        mainMenuModalEl.style.display = 'flex';
-                        MusicPlayer.playTheme('MENU_THEME');
-                    }
-                    clearItemDetails();
-                }
-                return;
-            }
-
-            if (gameContainerEl.style.display === 'flex' && party.length > 0 && party[activeCharacterIndex] && party[activeCharacterIndex].isAlive) {
-                 if (!party[activeCharacterIndex].hasActedThisTurn) { 
-                    switch(e.key.toLowerCase()){
-                        case 'arrowup': case 'w': movePlayer3D(1, 0); break;
-                        case 'arrowdown': case 's': movePlayer3D(-1, 0); break; 
-                        case 'arrowleft': case 'a': movePlayer3D(0, -1); break;
-                        case 'arrowright': case 'd': movePlayer3D(0, 1); break;
-                        case 'e': case ' ': performGenericAction(); break; 
-                        case 'i': case 'b': toggleInventory(); break;
-                        case 'm': toggleMap(); break; 
-                        case 'l': toggleLogbook(); break;
-                    }
-                }
-                if (['c', '1', '2', '3', '4'].includes(e.key.toLowerCase())) {
-                    switch(e.key.toLowerCase()){
-                        case 'c': 
-                            let currentActive = activeCharacterIndex;
-                            let newActive = (activeCharacterIndex + 1) % party.length;
-                            while(newActive !== currentActive && !party[newActive].isAlive) {
-                                newActive = (newActive + 1) % party.length;
-                            }
-                            if (party[newActive].isAlive) {
-                                activeCharacterIndex = newActive;
-                                addMessage(`${party[activeCharacterIndex].name} selected.`,'var(--color-gold-accent)');
-                                updateUI();
-                            }
-                            break;
-                        case '1':case '2':case '3':case '4':
-                            const charIdx = parseInt(e.key)-1;
-                            if(charIdx<party.length && party[charIdx].isAlive){
-                                activeCharacterIndex=charIdx;
-                                addMessage(`${party[activeCharacterIndex].name} selected.`,'var(--color-gold-accent)');
-                                updateUI();
-                            }
-                            break;
-                    }
-                }
-            }
-        }
-
-        function triggerMemberAction(memberIndex, actionType) {
-            if (!party[memberIndex] || !party[memberIndex].isAlive || currentTurn !== 'player' || party[memberIndex].hasActedThisTurn) {
-                addMessage(party[memberIndex]?.hasActedThisTurn ? `${party[memberIndex].name} has already acted.` : "Cannot perform action now.", "orange");
-                return;
-            }
-            activeCharacterIndex = memberIndex; 
-            const char = party[activeCharacterIndex];
-            const lookX = Math.round(player.x + player.dx);
-            const lookY = Math.round(player.y + player.dy);
-            const targetEnemy = enemies.find(e => e.x === lookX && e.y === lookY && e.hp > 0);
-
-            if (actionType === 'melee') {
-                if (targetEnemy) { playerAttackEnemy(char, targetEnemy, false); }
-                else { addMessage("No enemy directly in front for melee.", "orange"); char.hasActedThisTurn = true; endPlayerTurn(); }
-            } else if (actionType === 'ranged') {
-                if (!char.equippedWeapon || !char.equippedWeapon.ranged) { addMessage(`${char.name} needs a ranged weapon!`, "orange"); char.hasActedThisTurn = true; endPlayerTurn(); return; }
-                if (targetEnemy) { playerAttackEnemy(char, targetEnemy, true); }
-                else { addMessage("No target in front to shoot.", "orange"); char.hasActedThisTurn = true; endPlayerTurn(); }
-            } else if (actionType === 'magic') {
-                if (char.mp >= 10) {
-                    char.mp -= 10;
-                    if(targetEnemy) { 
-                        addMessage(`${char.name} casts a spell on ${targetEnemy.name}! (Magic Missile - 15 DMG)`, "cyan"); 
-                        targetEnemy.hp -= 15; 
-                        if(targetEnemy.hp <=0){ 
-                            addMessage(`${targetEnemy.name} is vanquished by the spell!`, "#80ff80");
-                            const xpg = targetEnemy.xpValue; const gg = targetEnemy.goldValue;
-                            party.forEach(m => { if(m.isAlive) m.xp += Math.floor(xpg / party.filter(p=>p.isAlive).length); });
-                            party[0].gold += gg;
-                            addMessage(`Party gains ${xpg} XP & ${gg} gold.`, "#80ff80");
-                            if (targetEnemy.loot) { addMessage(`${targetEnemy.name} dropped: ${targetEnemy.loot.name}!`, "#80ffff"); itemsOnMap.push({...targetEnemy.loot, x: targetEnemy.x, y: targetEnemy.y}); }
-                            enemies = enemies.filter(e => e !== targetEnemy);
-                            party.forEach(m => { if(m.isAlive) checkLevelUp(m); });
-                        }
-                    } else { addMessage(`${char.name} casts a spell into the void! (Effect TBD)`, "cyan"); }
-                    char.hasActedThisTurn = true; endPlayerTurn();
-                } else { addMessage(`${char.name} lacks the mana.`, "orange"); }
-                updateUI();
-            }
-        }
-
-
-        document.getElementById('actionCharacter').onclick=toggleInventory;
-        closeInventoryBtn.onclick=toggleInventory;
-        function toggleInventory(){if(inventoryPanelEl.style.display==='block'){inventoryPanelEl.style.display='none';clearItemDetails(); if (gameContainerEl.style.display === 'flex' && MusicPlayer.isMusicOn && !MusicPlayer.currentTheme) { MusicPlayer.playTheme(MusicPlayer.currentTheme || 'DUNGEON_THEME');}}else{inventoryCharacterNameEl.textContent = party[activeCharacterIndex].name; updateInventoryDisplay();inventoryPanelEl.style.display='block';mapPanelEl.style.display='none'; settingsModalEl.style.display='none'; logbookModalEl.style.display='none'; MusicPlayer.stop();}}
-        
-        function toggleMap(){
-            if(mapPanelEl.style.display==='block'){
-                mapPanelEl.style.display='none';
-                if (gameContainerEl.style.display === 'flex' && MusicPlayer.isMusicOn && !MusicPlayer.currentTheme) { MusicPlayer.playTheme(MusicPlayer.currentTheme || 'DUNGEON_THEME');}
-            }else{
-                mapDungeonLevelEl.textContent=dungeonLevel;
-                mapDungeonLevelIndicatorEl.textContent=dungeonLevel;
-                drawAutomap(automapCanvasModal, automapModalCtx); 
-                mapPanelEl.style.display='block';
-                inventoryPanelEl.style.display='none'; 
-                settingsModalEl.style.display='none'; 
-                logbookModalEl.style.display='none';
-                MusicPlayer.stop();
-            }
-        }
-        document.getElementById('actionMap').onclick=toggleMap;
-        if (closeMapBtn) closeMapBtn.onclick=toggleMap; 
-        
-        if(actionMenuBtn) actionMenuBtn.onclick = () => {
-            settingsModalEl.style.display = 'flex';
-            loadSettings();
-            MusicPlayer.stop();
-        };
-        
-        function toggleLogbook() {
-            if (logbookModalEl.style.display === 'flex') {
-                logbookModalEl.style.display = 'none';
-                 if (gameContainerEl.style.display === 'flex' && MusicPlayer.isMusicOn && !MusicPlayer.currentTheme) { 
-                    const dungeonThemes = ['DUNGEON_THEME', 'DUNGEON_THEME_ALT'];
-                    MusicPlayer.playTheme(MusicPlayer.currentTheme || dungeonThemes[Math.floor(Math.random() * dungeonThemes.length)]);
-                }
-            } else {
-                logbookModalEl.style.display = 'flex';
-                inventoryPanelEl.style.display = 'none';
-                mapPanelEl.style.display = 'none';
-                settingsModalEl.style.display = 'none';
-                MusicPlayer.stop(); 
-            }
-        }
-
-
-        function saveSettings() {
-            const settings = {
-                musicOn: musicToggleEl.checked,
-                musicVolume: parseFloat(volumeSliderEl.value)
-            };
-            localStorage.setItem('rpgGameSettings', JSON.stringify(settings));
-            MusicPlayer.toggleMusic(settings.musicOn);
-            MusicPlayer.setVolume(settings.musicVolume);
-        }
-
-        function loadSettings() {
-            const savedSettingsString = localStorage.getItem('rpgGameSettings');
-            if (savedSettingsString) {
-                const savedSettings = JSON.parse(savedSettingsString);
-                musicToggleEl.checked = savedSettings.musicOn !== undefined ? savedSettings.musicOn : true;
-                volumeSliderEl.value = savedSettings.musicVolume !== undefined ? savedSettings.musicVolume : 0.5;
-            } else { 
-                musicToggleEl.checked = true;
-                volumeSliderEl.value = 0.5;
-            }
-            MusicPlayer.isMusicOn = musicToggleEl.checked;
-            MusicPlayer.setVolume(parseFloat(volumeSliderEl.value));
-        }
-
-        function saveGameState() {
-            if (currentTurn === 'uninitialized') {
-                addMessage("Cannot save game before it has started.", "orange");
-                return;
-            }
-            const gameState = {
-                player: player,
-                party: party,
-                dungeonLevel: dungeonLevel,
-                exploredMap: exploredMap,
-                enemies: enemies,
-                itemsOnMap: itemsOnMap,
-                activeCharacterIndex: activeCharacterIndex,
-                currentTurn: currentTurn,
-                logMessages: Array.from(logbookContentEl.children).map(div => ({text: div.textContent, color: div.style.color})) 
-            };
-            localStorage.setItem('rpgGameState', JSON.stringify(gameState));
-            addMessage("Game Saved!", "lightgreen");
-        }
-
-        function loadGameState() {
-            const savedStateString = localStorage.getItem('rpgGameState');
-            if (!savedStateString) {
-                addMessage("No saved game found.", "orange");
-                return false;
-            }
-            try {
-                const savedState = JSON.parse(savedStateString);
-                if (!savedState.player || !savedState.party) throw new Error("Invalid save data structure.");
-
-                player = savedState.player;
-                party = savedState.party;
-                dungeonLevel = savedState.dungeonLevel;
-                exploredMap = savedState.exploredMap;
-                enemies = savedState.enemies;
-                itemsOnMap = savedState.itemsOnMap;
-                activeCharacterIndex = savedState.activeCharacterIndex;
-                currentTurn = savedState.currentTurn;
-
-                logbookContentEl.innerHTML = ''; 
-                if (savedState.logMessages && Array.isArray(savedState.logMessages)) {
-                    savedState.logMessages.forEach(msg => addMessage(msg.text, msg.color));
-                }
-
-                initGame(); 
-                addMessage("Game Loaded!", "lightgreen");
-                return true;
-            } catch (e) {
-                console.error("Error loading game state:", e);
-                addMessage("Error loading saved game. Data might be corrupt.", "red");
-                localStorage.removeItem('rpgGameState'); 
-                return false;
-            }
-        }
-
-
-        function resizeGameElements() {
-            const mainViewArea = document.querySelector('.main-view-container'); 
-            if (!mainViewArea) return;
-            
-            const aspectRatio = 4/3; 
-            let newWidth = mainViewArea.clientWidth;
-            let newHeight = mainViewArea.clientHeight;
-
-            if (newWidth / newHeight > aspectRatio) { 
-                newWidth = newHeight * aspectRatio;
-            } else { 
-                newHeight = newWidth / aspectRatio;
-            }
-
-            canvas.width = Math.floor(newWidth);
-            canvas.height = Math.floor(newHeight);
-            
-            const mapContainerAutomap = document.getElementById('mapCanvasContainerAutomap');
-            const mapContainerModal = document.getElementById('mapCanvasContainerModal');
-
-            if (mapContainerAutomap && typeof TEST_MAP_WIDTH !== 'undefined' && typeof TEST_MAP_HEIGHT !== 'undefined' && TEST_MAP_HEIGHT > 0) {
-                const mapAspectRatio = TEST_MAP_WIDTH / TEST_MAP_HEIGHT;
-                document.documentElement.style.setProperty('--map-aspect-ratio-calc', `${mapAspectRatio}`);
-                automapCanvas.style.width = '100%'; automapCanvas.style.height = 'auto';
-            }
-             if (mapContainerModal && typeof TEST_MAP_WIDTH !== 'undefined' && typeof TEST_MAP_HEIGHT !== 'undefined' && TEST_MAP_HEIGHT > 0) {
-                automapCanvasModal.style.width = '100%'; automapCanvasModal.style.height = 'auto';
-            }
-
-            if (currentTurn !== 'uninitialized' && gameContainerEl.style.display === 'flex') {
-                requestAnimationFrame(draw);
-            }
-        }
-        window.addEventListener('resize', resizeGameElements);
-        
-        window.onload = async () => {
-            try {
-                await AssetManager.init('assets.svg');
-                MusicPlayer.init();
-                initializeApp(); 
-            } catch (error) {
-                console.error("Fatal error during initialization:", error);
-                document.body.innerHTML = "<p style='color:white; text-align:center; padding-top: 50px;'>Error initializing game. SVG assets might be missing or corrupt. Check console.</p>";
-            }
-        };
-
-    </script>
 </body>
 </html>
